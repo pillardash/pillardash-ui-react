@@ -11,6 +11,7 @@ export interface ButtonProps {
     className?: string;
     icon?: ReactNode;
     loading?: boolean;
+    outline?: boolean;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -23,6 +24,7 @@ const Button: FC<ButtonProps> = ({
                                      className,
                                      icon,
                                      loading = false,
+                                     outline = false
                                  }) => {
     const baseClasses =
         "rounded-xl text-sm transition-all font-semibold duration-300 inline-flex items-center justify-center ease-in-out";
@@ -31,12 +33,24 @@ const Button: FC<ButtonProps> = ({
         medium: "px-6 py-3 text-md",
         large: "px-8 py-4 text-lg",
     };
-    const variantClasses: { secondary: string; primary: string; dark: string; neutral: string } = {
-        primary: "bg-primary text-white hover:bg-white border-primary border hover:border-primary hover:text-primary",
-        secondary: "border text-white hover:text-secondary text-sm bg-secondary border-secondary hover:bg-white",
-        dark: "text-white border bg-dark text-sm border-dark hover:bg-primary hover:border-primary",
-        neutral:
-            "text-gray-700 border bg-white text-sm border-gray-300 hover:bg-gray-700 hover:text-white",
+
+    const variantClasses = {
+        primary: {
+            solid: "bg-primary text-white hover:bg-white hover:text-primary border border-primary",
+            outline: "bg-transparent text-primary hover:bg-primary hover:text-white border border-primary"
+        },
+        secondary: {
+            solid: "bg-secondary text-white hover:bg-white hover:text-secondary border border-secondary",
+            outline: "bg-transparent text-secondary hover:bg-secondary hover:text-white border border-secondary"
+        },
+        dark: {
+            solid: "bg-dark text-white hover:bg-primary hover:border-primary border border-dark",
+            outline: "bg-transparent text-dark hover:bg-dark hover:text-white border border-dark"
+        },
+        neutral: {
+            solid: "bg-white text-gray-700 hover:bg-gray-700 hover:text-white border border-gray-300",
+            outline: "bg-transparent text-gray-700 hover:bg-gray-200 border border-gray-300"
+        }
     };
 
     const spinnerClasses = classNames(
@@ -52,7 +66,7 @@ const Button: FC<ButtonProps> = ({
     const classes = classNames(
         baseClasses,
         sizeClasses[size],
-        variantClasses[variant],
+        variantClasses[variant][outline ? 'outline' : 'solid'],
         disabled ? "opacity-50 cursor-not-allowed" : "hover:shadow-lg",
         className
     );
