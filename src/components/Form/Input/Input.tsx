@@ -10,7 +10,7 @@ export interface InputProps
     onChange?: (value: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     placeholder?: string;
     error?: string;
-    label: string;
+    label?: string;
     required?: boolean;
     helpText?: string;
     icon?: React.ReactNode;
@@ -65,10 +65,10 @@ const Input: React.FC<InputProps> = ({
 
     return (
         <div className=''>
-            <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-600'>
+            {label && <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-600'>
                 {label}
                 {required && <span className='ml-1 text-red-500'>*</span>}
-            </label>
+            </label>}
 
             <div className='relative'>
                 {icon && iconPosition === "left" && (

@@ -52,7 +52,7 @@ export default function SelectButton({
     };
 
     return (
-        <div className={`relative inline-block ${className}`}>
+        <div className={`relative inline-block`}>
             {label && (
                 <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-700'>
                     {label}
@@ -64,7 +64,7 @@ export default function SelectButton({
                 type='button'
                 className={`flex w-full items-center justify-between rounded-md border border-gray-200 bg-white shadow-sm ${
                     sizeClasses[size]
-                } text-gray-700 hover:bg-gray-50 focus:outline-none ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+                } text-gray-700 hover:bg-gray-50 focus:outline-none ${disabled ? "cursor-not-allowed opacity-50" : ""} ${className}`}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 disabled={disabled}
                 id={id}
