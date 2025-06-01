@@ -13,7 +13,7 @@
     "build": "rollup -c --bundleConfigAsCjs",
     "dev": "rollup -c -w",
     "prepublishOnly": "npm run build",
-    "release:patch": "npm version patch && npm run build && npm publish && git push && git push --tags"
+    "release": "npm version patch && npm run build && npm publish && git push && git push --tags"
   },
   "keywords": [
     "react",
