@@ -29,6 +29,35 @@ export default [
             resolve(),
             commonjs(),
             typescript({ tsconfig: "./tsconfig.json" }),
+            // Add this custom plugin to preserve "use client" directives
+            {
+                name: 'preserve-use-client',
+                generateBundle(options, bundle) {
+                    for (const [fileName, chunk] of Object.entries(bundle)) {
+                        if (chunk.type === 'chunk') {
+                            // Check if any of the modules in this chunk had "use client"
+                            const hasUseClient = Object.keys(chunk.modules || {}).some(moduleId => {
+                                // Read the original file to check for "use client"
+                                try {
+                                    const fs = require('fs');
+                                    if (fs.existsSync(moduleId) && moduleId.endsWith('.tsx')) {
+                                        const content = fs.readFileSync(moduleId, 'utf8');
+                                        return content.trim().startsWith('"use client"');
+                                    }
+                                } catch (e) {
+                                    // Fallback to checking code content
+                                }
+                                return false;
+                            });
+
+                            // If any module had "use client", add it to the bundle
+                            if (hasUseClient && !chunk.code.includes('"use client"')) {
+                                chunk.code = '"use client";\n' + chunk.code;
+                            }
+                        }
+                    }
+                }
+            },
             terser(),
             postcss(),
         ],

@@ -10,14 +10,14 @@ export type CheckBoxProps = {
     label?: string;
 };
 
-export default function CheckBox({
+export const CheckBox = ({
                                      variant = "check",
                                      size = "sm",
                                      checked = false,
                                      disabled = false,
                                      onChange,
                                      label,
-                                 }: CheckBoxProps) {
+                                 }: CheckBoxProps) => {
     const [isChecked, setIsChecked] = useState(checked);
 
     const handleChange = () => {
