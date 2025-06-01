@@ -16,3 +16,7 @@ export type { SelectOption } from './Select/Select';
 
 export { default as TextEditor } from './TextEditor/TextEditor';
 export type { TextEditorProps } from './TextEditor/TextEditor';
+
+export { default as SelectButton } from './Select/SelectButton';
+export type { SelectButtonProps } from './Select/SelectButton';
+export type { SelectButtonOption } from './Select/SelectButton';

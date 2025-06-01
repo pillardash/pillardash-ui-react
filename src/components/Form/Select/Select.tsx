@@ -57,14 +57,6 @@ export default function Select({
           )
         : options;
 
-    // const handleSelect = (option: SelectOption) => {
-    //     if (option.disabled) return;
-    //     setSelectedOption(option);
-    //     onChange(option.value);
-    //     setIsOpen(false);
-    //     setSearchTerm("");
-    // };
-
     const handleSelect = (option: SelectOption) => {
         if (option.disabled) return;
         setSelectedOption(option);
