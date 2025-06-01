@@ -9,7 +9,7 @@ export type CheckBoxProps = {
     label?: string;
 };
 
-export const CheckBox = ({
+const CheckBox = ({
                                      variant = "check",
                                      size = "sm",
                                      checked = false,
@@ -181,4 +181,5 @@ function CheckBoxDemo() {
     );
 }
 
+export default CheckBox;
 export { CheckBoxDemo };
