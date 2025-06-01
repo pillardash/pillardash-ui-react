@@ -40,7 +40,7 @@ export default function Select({
     required,
     error,
     helpText,
-    fullWidth = false,
+    fullWidth = true,
     searchable = false,
 }: SelectProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -91,12 +91,12 @@ export default function Select({
     // Size classes
     const sizeClasses = {
         sm: "px-3 py-1.5 text-sm",
-        md: "px-4 py-2.5 text-base",
+        md: "px-4 py-2 text-base",
         lg: "px-4 py-3 text-lg",
     };
 
     return (
-        <div ref={selectRef} className={`${fullWidth ? "w-full" : "w-fit"} ${className}`}>
+        <div ref={selectRef} className={`${fullWidth ? "w-full" : "w-fit"}`}>
             {label && (
                 <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-700'>
                     {label}
@@ -109,11 +109,11 @@ export default function Select({
                     type='button'
                     className={`flex items-center justify-between rounded-md border ${
                         error ? "border-red-500" : "border-gray-300"
-                    } bg-white shadow-sm ${
+                    } bg-gray-100 shadow-sm ${
                         sizeClasses[size]
-                    } text-gray-700 hover:border-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 ${
+                    } text-gray-400 hover:border-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 ${
                         disabled ? "cursor-not-allowed bg-gray-100 opacity-50" : ""
-                    } ${fullWidth ? "w-full" : ""}`}
+                    }  ${className} ${fullWidth ? "w-full" : ""}`}
                     onClick={() => !disabled && setIsOpen(!isOpen)}
                     disabled={disabled}
                     id={id}
