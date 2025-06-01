@@ -13,9 +13,9 @@ A collection of reusable React components for building modern web applications w
 ## Installation
 
 ```bash
-npm install @your-org/component-library
+npm install pillardash-ui-react
 # or
-yarn add @your-org/component-library
+yarn add pillardash-ui-react
 ```
 
 ## Peer Dependencies
@@ -51,7 +51,7 @@ This library requires:
 ## Usage
 
 ```tsx
-import { Button, Input } from '@your-org/component-library';
+import { Button, Input } from 'pillardash-ui-react';
 
 function Example() {
   return (
@@ -73,7 +73,7 @@ function Example() {
 Customize the look and feel by wrapping your app with the `ThemeProvider`:
 
 ```tsx
-import { ThemeProvider } from '@your-org/component-library';
+import { ThemeProvider } from 'pillardash-ui-react';
 
 function App() {
   return (
@@ -96,7 +96,7 @@ function App() {
 All components include TypeScript definitions. Import prop types for extended customization:
 
 ```tsx
-import { Button, type ButtonProps } from '@your-org/component-library';
+import { Button, type ButtonProps } from 'pillardash-ui-react';
 
 const CustomButton = (props: ButtonProps) => (
   <Button {...props} className="custom-class" />

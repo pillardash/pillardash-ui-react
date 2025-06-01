@@ -2,7 +2,7 @@
   "name": "pillardash-ui-react",
   "version": "0.1.0",
   "type": "module",
-  "description": "PillarDash Reusable UI components",
+  "description": "Pillardash reusable react components",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -25,9 +25,9 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mrprotocoll/pillardash-ui.git"
+    "url": "git+https://github.com/mrprotocoll/pillardash-ui-react.git"
   },
-  "homepage": "https://github.com/mrprotocoll/pillardash-ui#readme",
+  "homepage": "https://github.com/mrprotocoll/pillardash-ui-react#readme",
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
