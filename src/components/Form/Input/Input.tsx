@@ -50,7 +50,7 @@ const Input: React.FC<InputProps> = ({
         onChange: handleChange,
         placeholder,
         disabled,
-        className: `w-full rounded-lg border px-3 py-2 ${
+        className: `w-full rounded-[12px] border px-3 py-2 ${
             error ? "border-red-500" : "border-gray-200"
         } ${
             disabled
@@ -64,7 +64,7 @@ const Input: React.FC<InputProps> = ({
     };
 
     return (
-        <div className=''>
+        <div className='mb-2'>
             {label && <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-600'>
                 {label}
                 {required && <span className='ml-1 text-red-500'>*</span>}
