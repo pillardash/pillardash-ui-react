@@ -3,7 +3,7 @@ import React, { ChangeEvent, InputHTMLAttributes, TextareaHTMLAttributes } from 
 export interface InputProps
     extends Omit<
         InputHTMLAttributes<HTMLInputElement> & TextareaHTMLAttributes<HTMLTextAreaElement>,
-        "onChange"
+        "onChange" | "size"
     > {
     id: string;
     value: string;
@@ -17,12 +17,14 @@ export interface InputProps
     iconPosition?: "left" | "right";
     rightIcon?: React.ReactNode;
     className?: string;
+    size?: "sm" | "md" | "lg";
 }
 
 const Input: React.FC<InputProps> = ({
     id,
     label,
     value,
+    size = "md",
     onChange,
     placeholder,
     error,
@@ -44,13 +46,27 @@ const Input: React.FC<InputProps> = ({
         }
     };
 
+    const sizeClasses = {
+        sm: "text-xs py-1.5 px-2.5",
+        md: "text-sm py-3 px-4",
+        lg: "text-base p-5",
+    };
+
+    // const iconSizeClasses = {
+    //     sm: "h-4 w-4",
+    //     md: "h-5 w-5",
+    //     lg: "h-6 w-6",
+    // };
+
     const commonProps = {
         id,
         value,
         onChange: handleChange,
         placeholder,
         disabled,
-        className: `w-full rounded-[12px] border px-3 py-2 ${
+        className: `w-full rounded-[12px] border ${
+            sizeClasses[size]
+        } ${
             error ? "border-red-500" : "border-gray-200"
         } ${
             disabled
@@ -64,7 +80,7 @@ const Input: React.FC<InputProps> = ({
     };
 
     return (
-        <div className='mb-2'>
+        <div className='mb-4'>
             {label && <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-600'>
                 {label}
                 {required && <span className='ml-1 text-red-500'>*</span>}
