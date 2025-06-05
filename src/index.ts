@@ -9,3 +9,5 @@ export * from "./components/Form";
 
 // Alert
 export * from "./components/Alert";
+
+export * from "./components/Modal";
