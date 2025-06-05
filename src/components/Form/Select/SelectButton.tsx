@@ -89,7 +89,7 @@ export default function SelectButton({
                         >
 
                             <div>{option.label || option.value}</div>
-                            <div><Check className="text-primary" /></div>
+                            { selectedOption?.value === option.value && <div><Check className="text-primary" /></div> }
                         </div>
                     ))}
                 </div>
