@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 
 export type SelectButtonOption = {
     value: string;
@@ -76,18 +76,20 @@ export default function SelectButton({
             </button>
 
             {isOpen && (
-                <div className='absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg'>
+                <div className='absolute z-10 mt-1 max-h-60 w-full p-1 font-medium text-sm overflow-auto rounded-lg bg-white shadow-xl'>
                     {options.map((option) => (
                         <div
                             key={option.value}
-                            className={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${
+                            className={`cursor-pointer px-3 py-2 hover:bg-gray-100 flex justify-between ${
                                 selectedOption?.value === option.value
                                     ? "bg-gray-50 text-black"
                                     : "text-gray-900"
                             }`}
                             onClick={() => handleSelect(option)}
                         >
-                            {option.label || option.value}
+
+                            <div>{option.label || option.value}</div>
+                            <div><Check className="text-primary" /></div>
                         </div>
                     ))}
                 </div>
