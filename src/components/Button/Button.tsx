@@ -2,16 +2,38 @@ import { FC, ReactNode } from "react";
 import classNames from "classnames";
 
 export interface ButtonProps {
+    /** The content of the button */
     children: ReactNode;
-    onClick?: () => void;
+
+    /** Click handler function */
+    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+
+    /** HTML button type attribute */
     type?: "button" | "submit" | "reset";
+
+    /** Size of the button */
     size?: "small" | "medium" | "large";
+
+    /** Visual style variant */
     variant?: "primary" | "secondary" | "dark" | "neutral";
+
+    /** Disabled state of the button */
     disabled?: boolean;
+
+    /** Additional CSS classes */
     className?: string;
+
+    /** Optional icon to display before text */
     icon?: ReactNode;
+
+    /** Loading state - shows spinner */
     loading?: boolean;
+
+    /** Outline style instead of solid */
     outline?: boolean;
+
+    /** Position of the icon relative to text */
+    iconPosition?: "left" | "right";
 }
 
 const Button: FC<ButtonProps> = ({
@@ -24,7 +46,8 @@ const Button: FC<ButtonProps> = ({
                                      className,
                                      icon,
                                      loading = false,
-                                     outline = false
+                                     outline = false,
+    iconPosition = "left",
                                  }) => {
     const baseClasses =
         "rounded-xl text-sm transition-all font-semibold duration-300 inline-flex items-center justify-center ease-in-out";
@@ -68,8 +91,13 @@ const Button: FC<ButtonProps> = ({
         sizeClasses[size],
         variantClasses[variant][outline ? 'outline' : 'solid'],
         disabled ? "opacity-50 cursor-not-allowed" : "hover:shadow-lg",
-        className
+        className,
+        {
+            "flex-row-reverse": iconPosition === "right"
+        }
     );
+
+    const iconSpacingClass = iconPosition === "left" ? "mr-2" : "ml-2";
 
     return (
         <button type={type} onClick={onClick} disabled={disabled} className={classes}>
@@ -99,7 +127,7 @@ const Button: FC<ButtonProps> = ({
                 </>
             ) : (
                 <>
-                    {icon && <span className='mr-2'>{icon}</span>}
+                    {icon && <span className={iconSpacingClass}>{icon}</span>}
                     {children}
                 </>
             )}
@@ -107,4 +135,20 @@ const Button: FC<ButtonProps> = ({
     );
 };
 
+
+/**
+ * A customizable button component with multiple variants, sizes, and states.
+ *
+ * @example
+ * <Button
+ *   variant="primary"
+ *   size="large"
+ *   onClick={() => console.log('Clicked!')}
+ * >
+ *   Click Me
+ * </Button>
+ *
+ * @param {ButtonProps} props - The component props
+ * @returns {JSX.Element} A styled button element
+ */
 export default Button;
