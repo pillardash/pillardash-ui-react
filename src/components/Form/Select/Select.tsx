@@ -180,7 +180,7 @@ export default function Select({
     };
 
     return (
-        <div ref={selectRef} className={`${fullWidth ? "w-full" : "w-fit"}`}>
+        <div ref={selectRef} className={`${fullWidth ? "w-full" : "w-fit"} mb-4`}>
             {label && (
                 <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-700'>
                     {label}
@@ -195,7 +195,7 @@ export default function Select({
                         error ? "border-red-500" : "border-gray-200"
                     } bg-white shadow-sm ${
                         sizeClasses[size]
-                    } text-gray-700 hover:border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                    } text-gray-700 hover:border-gray-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
                         disabled ? "cursor-not-allowed bg-gray-50 opacity-50" : ""
                     } ${className} ${fullWidth ? "w-full" : ""} transition-all duration-200`}
                     onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -210,13 +210,13 @@ export default function Select({
                                 {selectedOptions.slice(0, 3).map((option) => (
                                     <span
                                         key={option.value}
-                                        className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-800 text-sm rounded-md"
+                                        className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-100 text-primary-800 text-sm rounded-md"
                                     >
                                         <span className="truncate max-w-[120px]">
                                             {option.label || option.value}
                                         </span>
                                         <X
-                                            className="h-3 w-3 cursor-pointer hover:text-blue-900"
+                                            className="h-3 w-3 cursor-pointer hover:text-primary-900"
                                             onClick={(e) => removeOption(option, e)}
                                         />
                                     </span>
@@ -249,7 +249,7 @@ export default function Select({
                             <div className='sticky top-0 border-b border-gray-100 bg-white p-3'>
                                 <input
                                     type='text'
-                                    className='w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200'
+                                    className='w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-200'
                                     placeholder='Search...'
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -276,7 +276,7 @@ export default function Select({
                                                 key={option.value}
                                                 className={`cursor-pointer px-3 py-2 flex items-center justify-between transition-colors duration-150 ${
                                                     isSelected
-                                                        ? "bg-blue-50 text-blue-700"
+                                                        ? "bg-primary-50 text-primary-700"
                                                         : "text-gray-700 hover:bg-gray-50"
                                                 } ${
                                                     isDisabled
@@ -292,7 +292,7 @@ export default function Select({
                                                     {option.label || option.value}
                                                 </span>
                                                 {multiple && isSelected && (
-                                                    <div className="w-4 h-4 bg-blue-500 rounded-sm flex items-center justify-center">
+                                                    <div className="w-4 h-4 bg-primary-500 rounded-sm flex items-center justify-center">
                                                         <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                                         </svg>
