@@ -12,7 +12,7 @@ export interface ButtonProps {
     type?: "button" | "submit" | "reset";
 
     /** Size of the button */
-    size?: "small" | "medium" | "large";
+    size?: "small" | "medium" | "large" | "sm" | "md" | "lg";
 
     /** Visual style variant */
     variant?: "primary" | "secondary" | "dark" | "neutral";
@@ -53,8 +53,11 @@ const Button: FC<ButtonProps> = ({
         "rounded-xl text-sm transition-all font-semibold duration-300 inline-flex items-center justify-center ease-in-out";
     const sizeClasses = {
         small: "px-5 py-2 text-sm",
+        sm: "px-5 py-2 text-sm",
         medium: "px-6 py-3 text-md",
+        md: "px-6 py-3 text-md",
         large: "px-8 py-4 text-lg",
+        lg: "px-8 py-4 text-lg",
     };
 
     const variantClasses = {
