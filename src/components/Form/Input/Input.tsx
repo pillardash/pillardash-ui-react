@@ -47,9 +47,9 @@ const Input: React.FC<InputProps> = ({
     };
 
     const sizeClasses = {
-        sm: "text-xs py-1.5 px-2.5",
-        md: "text-sm py-3 px-4",
-        lg: "text-base p-5",
+        sm: "text-xs px-3 py-1.5 text-sm min-h-[32px]",
+        md: "text-sm px-4 py-2 text-base min-h-[40px]",
+        lg: "text-base px-4 py-3 text-lg min-h-[48px]",
     };
 
     // const iconSizeClasses = {

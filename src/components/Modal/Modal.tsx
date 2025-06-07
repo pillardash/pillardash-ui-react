@@ -192,7 +192,7 @@ const Modal: React.FC<ModalProps> = ({
                     {/* Footer */}
                     {footer && (
                         <div
-                            className={`px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 ${position !== "center" ? (position === "left" ? "rounded-br-2xl" : "rounded-bl-2xl" ) : "rounded-b-2xl"} ${footerClassName}`}>
+                            className={`px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 rounded-2xl ${footerClassName}`}>
                             {footer}
                         </div>
                     )}
