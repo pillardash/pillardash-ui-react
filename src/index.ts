@@ -10,4 +10,8 @@ export * from "./components/Form";
 // Alert
 export * from "./components/Alert";
 
+// Modal
 export * from "./components/Modal";
+
+// Table
+export * from "./components/Table";
