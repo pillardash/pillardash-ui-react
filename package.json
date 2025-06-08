@@ -14,7 +14,7 @@
     "dev": "rollup -c -w",
     "prepublishOnly": "npm run build",
     "release": "npm version patch && npm publish && git push && git push --tags",
-    "publish": "npm version patch && npm publish",
+    "pub": "npm version patch && npm publish",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

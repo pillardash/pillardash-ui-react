@@ -10,6 +10,8 @@ export interface AlertContextProps {
     warning: (message: string, description?: string) => void;
 }
 
+let globalAlertRef: AlertContextProps | null = null;
+
 export const AlertContext = createContext<AlertContextProps | undefined>(undefined);
 
 export interface AlertItem extends AlertProps {
@@ -17,7 +19,7 @@ export interface AlertItem extends AlertProps {
 }
 
 export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [toasts, setAlerts] = useState<AlertItem[]>([]);
+    const [alerts, setAlerts] = useState<AlertItem[]>([]);
 
     const removeAlert = useCallback((id: string) => {
         setAlerts((prevAlerts) => prevAlerts.filter((toast) => toast.id !== id));
@@ -51,14 +53,25 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         warning: createAlertFn("warning"),
     };
 
+    // Set the global reference when provider mounts
+    globalAlertRef = contextValue;
+
     return (
         <AlertContext.Provider value={contextValue}>
             {children}
-            <div className='toast-container'>
-                {toasts.map((toast) => (
-                    <Alert key={toast.id} {...toast} />
-                ))}
-            </div>
+            <div className='fixed right-4 top-4 z-50 space-y-2 w-full max-w-xs'>
+                {alerts.map((alert, index) => (
+                    <div
+                        key={alert.id}
+                        style={{
+                            transform: `translateY(${index * 10}px)`,
+                            zIndex: 50 - index,
+                        }}
+                    >
+                        <Alert {...alert} />
+                    </div>
+            ))}
+        </div>
         </AlertContext.Provider>
     );
 };
@@ -69,4 +82,44 @@ export const useAlert = (): AlertContextProps => {
         throw new Error("useAlert must be used within a AlertProvider");
     }
     return context;
+};
+
+
+// Export a global alert function that can be used anywhere
+export const alert = {
+    success: (message: string, description?: string) => {
+        if (!globalAlertRef) {
+            console.warn("AlertProvider not mounted yet");
+            return;
+        }
+        globalAlertRef.success(message, description);
+    },
+    error: (message: string, description?: string) => {
+        if (!globalAlertRef) {
+            console.warn("AlertProvider not mounted yet");
+            return;
+        }
+        globalAlertRef.error(message, description);
+    },
+    info: (message: string, description?: string) => {
+        if (!globalAlertRef) {
+            console.warn("AlertProvider not mounted yet");
+            return;
+        }
+        globalAlertRef.info(message, description);
+    },
+    warning: (message: string, description?: string) => {
+        if (!globalAlertRef) {
+            console.warn("AlertProvider not mounted yet");
+            return;
+        }
+        globalAlertRef.warning(message, description);
+    },
+    show: (props: Omit<AlertProps, "onClose">) => {
+        if (!globalAlertRef) {
+            console.warn("AlertProvider not mounted yet");
+            return;
+        }
+        globalAlertRef.showAlert(props);
+    },
 };

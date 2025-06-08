@@ -26,11 +26,11 @@ const Alert: React.FC<AlertProps> = ({
     const config = {
         success: {
             icon: <CheckCircle className='h-5 w-5' />,
-            bgColor: "bg-primary-50",
-            borderColor: "border-primary-300",
-            textColor: "text-primary-800",
-            iconColor: "text-primary-500",
-            progressColor: "bg-primary-500",
+            bgColor: "bg-green-50",
+            borderColor: "border-green-300",
+            textColor: "text-green-800",
+            iconColor: "text-green-500",
+            progressColor: "bg-green-500",
         },
         error: {
             icon: <AlertCircle className='h-5 w-5' />,
@@ -42,11 +42,11 @@ const Alert: React.FC<AlertProps> = ({
         },
         info: {
             icon: <Info className='h-5 w-5' />,
-            bgColor: "bg-sky-50",
-            borderColor: "border-sky-300 ",
-            textColor: "text-sky-800 ",
-            iconColor: "text-sky-500",
-            progressColor: "bg-sky-500",
+            bgColor: "bg-blue-50",
+            borderColor: "border-blue-300",
+            textColor: "text-blue-800",
+            iconColor: "text-blue-500",
+            progressColor: "bg-blue-500",
         },
         warning: {
             icon: <AlertTriangle className='h-5 w-5' />,
