@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useState } from "react";
 
 import Alert, { AlertProps, AlertType } from "./Alert";
 
-interface AlertContextProps {
+export interface AlertContextProps {
     showAlert: (props: Omit<AlertProps, "onClose">) => void;
     success: (message: string, description?: string) => void;
     error: (message: string, description?: string) => void;
@@ -10,9 +10,9 @@ interface AlertContextProps {
     warning: (message: string, description?: string) => void;
 }
 
-const AlertContext = createContext<AlertContextProps | undefined>(undefined);
+export const AlertContext = createContext<AlertContextProps | undefined>(undefined);
 
-interface AlertItem extends AlertProps {
+export interface AlertItem extends AlertProps {
     id: string;
 }
 
