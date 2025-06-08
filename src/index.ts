@@ -15,3 +15,6 @@ export * from "./components/Modal";
 
 // Table
 export * from "./components/Table";
+
+// Skeleton loader
+export * from "./components/SkeletonLoader";

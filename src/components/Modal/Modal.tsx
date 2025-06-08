@@ -7,7 +7,7 @@ type ModalPosition = 'left' | 'right' | 'center';
 export interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    title?: string;
+    title?: React.ReactNode;
     children: React.ReactNode;
     size?: ModalSize;
     position?: ModalPosition;
