@@ -115,7 +115,7 @@ const Modal: React.FC<ModalProps> = ({
 
     const getModalPositionClasses = (): string => {
         if (position === 'left' || position === 'right') {
-            return `h-full ${maxHeight ? 'max-h-screen' : ''} rounded-none ${position === 'left' ? 'rounded-r-2xl' : 'rounded-l-2xl'}`;
+            return `h-full ${maxHeight ? 'max-h-screen' : ''} rounded-2xl`;
         }
         return `rounded-2xl ${maxHeight ? 'max-h-[90vh] overflow-hidden' : ''}`;
     };
