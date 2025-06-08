@@ -2,4 +2,4 @@ export type { TableDropdownProps, TableProps, PaginationProps, Column} from "./t
 export { default as Table } from "./Table";
 export { Pagination } from "./Pagination";
 export { TableSkeleton } from "./TableSkeleton";
-export { default } from "./TableDropdown";
+export { default as TableDropdown} from "./TableDropdown";
