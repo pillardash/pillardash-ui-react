@@ -75,12 +75,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
 	};
 
 	return (
-		<div
-			className={`flex flex-${direction} space-y-4 gap-3`}
-		>
+		<div className="space-y-4">
 			{!uploadedFile ? (
 				<div
-					className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
+					className={`flex flex-${direction} gap-4 rounded-lg border-2 border-dashed border-gray-300 p-8 text-center items-center justify-center`}
 					onDragOver={handleDragOver}
 					onDrop={handleDrop}
 				>
@@ -99,7 +97,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 						onChange={handleFileUpload}
 					/>
 					<p className="text-gray-500">or drag and drop</p>
-					<p className="mt-2 text-sm text-gray-400">
+					<p className="text-sm text-gray-400">
 						(Max. File size: 25 MB)
 					</p>
 				</div>
