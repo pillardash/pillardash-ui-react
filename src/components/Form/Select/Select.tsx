@@ -11,7 +11,7 @@ export type SelectProps = {
     options: SelectOption[];
     placeholder?: string;
     onChange: (value: React.ChangeEvent<HTMLSelectElement>) => void;
-    value?: string | string[]; // Updated to support array for multi-select
+    value?: string | string[];
     size?: "sm" | "md" | "lg";
     className?: string;
     name?: string;
@@ -288,7 +288,7 @@ export default function Select({
                                                 aria-selected={isSelected}
                                                 aria-disabled={isDisabled as boolean}
                                             >
-                                                <span className="flex-1">
+                                                <span className="flex-1 text-sm font-medium">
                                                     {option.label || option.value}
                                                 </span>
                                                 {multiple && isSelected && (
