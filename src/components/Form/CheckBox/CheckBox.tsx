@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type CheckBoxProps = {
     variant?: "check" | "dot" | "toggle";
@@ -18,6 +18,11 @@ const CheckBox = ({
                                      label,
                                  }: CheckBoxProps) => {
     const [isChecked, setIsChecked] = useState(checked);
+
+    // Sync internal state with props
+    useEffect(() => {
+        setIsChecked(checked);
+    }, [checked]);
 
     const handleChange = () => {
         if (disabled) return;
