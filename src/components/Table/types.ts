@@ -13,6 +13,7 @@ export interface TableProps<T> {
     onPageChange?: (page: number) => void;
     loading?: boolean;
     showPagination?: boolean;
+    onRowClick?: (item: T) => void;
 }
 
 export interface Column<T> {

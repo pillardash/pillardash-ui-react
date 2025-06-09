@@ -15,10 +15,17 @@ export default function Table<T>({
     onPageChange,
     loading = false,
     showPagination = true,
+    onRowClick,
 }: TableProps<T>) {
     const totalItemsCount = totalItems || data.length;
     const totalPages = Math.ceil(totalItemsCount / itemsPerPage);
     const currentItems = showPagination ? data : data;
+
+    const handleRowClick = (item: T) => {
+        if (onRowClick) {
+            onRowClick(item);
+        }
+    };
 
     return (
         <>
@@ -37,14 +44,14 @@ export default function Table<T>({
                         </tr>
                     </thead>
                     <tbody
-                        className={`divide-y divide-gray-200 bg-white ${
-                            loading ? "opacity-50" : ""
-                        }`}
+                        className={`divide-y divide-gray-200 bg-white 
+                            ${ loading ? "opacity-50" : ""} ${onRowClick ? "cursor-pointer" : ""}
+                        `}
                     >
                         {loading && <TableSkeleton columns={columns.length} rows={itemsPerPage} />}
                         {currentItems.length > 0
                             ? currentItems.map((item: T, rowIndex) => (
-                                  <tr key={rowIndex} className='hover:bg-gray-50'>
+                                  <tr onClick={() => handleRowClick(item)} key={rowIndex} className='hover:bg-gray-50'>
                                       {columns.map((column, colIndex) => (
                                           <td
                                               key={colIndex}
