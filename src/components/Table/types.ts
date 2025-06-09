@@ -17,7 +17,7 @@ export interface TableProps<T> {
 }
 
 export interface Column<T> {
-    title: string;
+    title: ReactNode;
     value: keyof T | ((data: T) => React.ReactNode);
     width?: string;
 }
