@@ -4,12 +4,12 @@ import { File, X } from "lucide-react";
 
 export interface FileUploadProps {
 	onFileChange: (file: File | null) => void;
-	direction?: "row" | "column";
+	direction?: "row" | "col";
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
 	onFileChange,
-	direction = "column",
+	direction = "col",
 }) => {
 	const [uploadedFile, setUploadedFile] =
 		useState<File | null>(null);
