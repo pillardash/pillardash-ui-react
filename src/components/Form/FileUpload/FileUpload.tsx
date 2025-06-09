@@ -78,7 +78,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
 		<div className="space-y-4">
 			{!uploadedFile ? (
 				<div
-					className={`flex flex-${direction} gap-4 rounded-lg border-2 border-dashed border-gray-300 p-8 text-center items-center justify-center`}
+					className={`flex flex-${direction} gap-4 rounded-lg border-2 border-dashed border-gray-300 p-8 text-center items-center ${
+						direction === "row" ? "justify-center" : ""
+					}`}
 					onDragOver={handleDragOver}
 					onDrop={handleDrop}
 				>
