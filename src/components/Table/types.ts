@@ -1,9 +1,9 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 export interface TableProps<T> {
     data: T[];
     columns: Column<T>[];
-    title?: string;
+    title?: ReactNode;
     subtitle?: string;
     itemsPerPage?: number;
     currentView?: string;
