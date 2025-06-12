@@ -62,7 +62,7 @@ const Button: FC<ButtonProps> = ({
 
     const variantClasses = {
         primary: {
-            solid: "bg-primary text-white hover:bg-white hover:text-primary border border-primary",
+            solid: "bg-primary text-white hover:bg-primary-700 border border-primary",
             outline: "bg-transparent text-primary hover:bg-primary hover:text-white border border-primary"
         },
         secondary: {
@@ -74,7 +74,7 @@ const Button: FC<ButtonProps> = ({
             outline: "bg-transparent text-dark hover:bg-dark hover:text-white border border-dark"
         },
         neutral: {
-            solid: "bg-white text-gray-700 hover:bg-gray-700 hover:text-white border border-gray-300",
+            solid: "bg-white text-gray-700 hover:bg-gray-300 hover:text-white border border-gray-300",
             outline: "bg-transparent text-gray-700 hover:bg-gray-200 border border-gray-300"
         }
     };
