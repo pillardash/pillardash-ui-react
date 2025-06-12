@@ -7,6 +7,7 @@ export type CheckBoxProps = {
     disabled?: boolean;
     onChange?: (checked: boolean) => void;
     label?: string;
+    labelPosition?: "left" | "right";
 };
 
 const CheckBox = ({
@@ -16,6 +17,7 @@ const CheckBox = ({
                                      disabled = false,
                                      onChange,
                                      label,
+                      labelPosition = "right"
                                  }: CheckBoxProps) => {
     const [isChecked, setIsChecked] = useState(checked);
 
@@ -117,8 +119,11 @@ const CheckBox = ({
 
     return (
         <div className='flex items-center gap-2'>
+            {label && labelPosition === 'left' && (
+                <label className={`${disabled ? "text-gray-400" : "text-gray-700"}`}>{label}</label>
+            )}
             {renderCheckBox()}
-            {label && (
+            {label && labelPosition === 'right' && (
                 <label className={`${disabled ? "text-gray-400" : "text-gray-700"}`}>{label}</label>
             )}
         </div>
