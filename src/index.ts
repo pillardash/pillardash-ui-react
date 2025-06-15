@@ -18,3 +18,6 @@ export * from "./components/Table";
 
 // Skeleton loader
 export * from "./components/SkeletonLoader";
+
+// loading
+export * from "./components/Loading";
