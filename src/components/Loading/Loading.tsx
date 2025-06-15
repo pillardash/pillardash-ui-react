@@ -9,10 +9,10 @@ export interface LoadingProps {
     className?: string;
 }
 
-export const Loading: React.FC<LoadingProps> = ({
+const Loading: React.FC<LoadingProps> = ({
                                              size = 'md',
                                              variant = 'spinner',
-                                             color = 'blue-500', // Default to Tailwind blue-500
+                                             color = 'primary-color', // Default to Tailwind blue-500
                                              fullScreen = false,
                                              text,
                                              className = '',
@@ -200,8 +200,9 @@ export const Loading: React.FC<LoadingProps> = ({
     return content;
 };
 
+export default Loading;
 // Demo component to showcase different variants
-const LoadingDemo: React.FC = () => {
+export const LoadingDemo: React.FC = () => {
     const [selectedColor, setSelectedColor] = React.useState('blue-500');
     const [selectedVariant, setSelectedVariant] = React.useState<LoadingProps['variant']>('spinner');
     const [selectedSize, setSelectedSize] = React.useState<LoadingProps['size']>('md');
@@ -357,5 +358,3 @@ const LoadingDemo: React.FC = () => {
         </div>
     );
 };
-
-export default LoadingDemo;
