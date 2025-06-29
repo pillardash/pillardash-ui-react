@@ -14,6 +14,7 @@ export interface TableProps<T> {
     loading?: boolean;
     showPagination?: boolean;
     onRowClick?: (item: T) => void;
+    useCardLayout?: boolean;
 }
 
 export interface Column<T> {
