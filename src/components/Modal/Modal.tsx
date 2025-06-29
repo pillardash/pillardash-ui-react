@@ -86,7 +86,7 @@ const Modal: React.FC<ModalProps> = ({
     }, [isOpen, closeOnEscape, onClose]);
 
     const handleOverlayClick = (event: React.MouseEvent) => {
-        if (event.target === event.currentTarget && closeOnOverlayClick) {
+        if (event.target === event.currentTarget && closeOnOverlayClick && size !== 'full') {
             onClose();
         }
     };
@@ -99,12 +99,16 @@ const Modal: React.FC<ModalProps> = ({
             lg: 'max-w-lg',
             xl: 'max-w-xl',
             '2xl': 'max-w-2xl',
-            full: 'max-w-full mx-4'
+            full: 'w-full h-full'
         };
         return sizeMap[size];
     };
 
     const getPositionClasses = (): string => {
+        if (size === 'full') {
+            return 'items-start justify-start';
+        }
+
         const positionMap: Record<ModalPosition, string> = {
             left: 'items-start justify-start',
             right: 'items-start justify-end',
@@ -114,10 +118,18 @@ const Modal: React.FC<ModalProps> = ({
     };
 
     const getModalPositionClasses = (): string => {
+        if (size === 'full') {
+            return 'h-full max-h-screen overflow-hidden';
+        }
+
         if (position === 'left' || position === 'right') {
             return `h-full ${maxHeight ? 'max-h-screen' : ''} rounded-2xl`;
         }
         return `rounded-2xl ${maxHeight ? 'max-h-[90vh] overflow-hidden' : ''}`;
+    };
+
+    const getContainerPadding = (): string => {
+        return size === 'full' ? 'p-0' : 'p-4';
     };
 
     if (!isOpen) return null;
@@ -129,15 +141,17 @@ const Modal: React.FC<ModalProps> = ({
             aria-modal="true"
             aria-labelledby={title ? 'modal-title' : undefined}
         >
-            {/* Backdrop */}
-            <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-700"
-                onClick={handleOverlayClick}
-            />
+            {/* Backdrop - Hidden for full screen */}
+            {size !== 'full' && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-700"
+                    onClick={handleOverlayClick}
+                />
+            )}
 
             {/* Modal Container */}
             <div
-                className={`fixed inset-0 flex p-4 ${getPositionClasses()}`}
+                className={`fixed inset-0 flex ${getContainerPadding()} ${getPositionClasses()}`}
                 onClick={handleOverlayClick}
             >
                 {/* Modal Content */}
@@ -147,7 +161,14 @@ const Modal: React.FC<ModalProps> = ({
                     className={`
             relative w-full ${getSizeClasses()} bg-white shadow-2xl transform transition-all duration-700 ease-out flex flex-col
             ${getModalPositionClasses()}
-            ${position === "center" ? "animate-in fade-in-0 zoom-in-95" : position === "left" ? "animate-in slide-in-from-left-full" : "animate-in slide-in-from-right-full"}
+            ${size === 'full'
+                        ? "animate-in fade-in-0"
+                        : position === "center"
+                            ? "animate-in fade-in-0 zoom-in-95"
+                            : position === "left"
+                                ? "animate-in slide-in-from-left-full"
+                                : "animate-in slide-in-from-right-full"
+                    }
             ${className}
           `}
                     onClick={(e) => e.stopPropagation()}
@@ -155,7 +176,7 @@ const Modal: React.FC<ModalProps> = ({
                     {/* Header */}
                     {(title || showCloseButton) && (
                         <div
-                            className={`flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0 ${headerClassName}`}>
+                            className={`flex items-center justify-between px-6 py-2 border-b border-gray-200 flex-shrink-0 ${headerClassName}`}>
                             {title && (
                                 <h2
                                     id="modal-title"
@@ -177,8 +198,8 @@ const Modal: React.FC<ModalProps> = ({
                     )}
 
                     {/* Content */}
-                    <div className={`flex-1 min-h-0 overflow-y-auto ${maxHeight ? "overflow-y-auto" : ""} ${contentClassName}`}>
-                        {maxHeight && (position === "left" || position === "right") ? (
+                    <div className={`flex-1 min-h-0 overflow-y-auto ${maxHeight || size === 'full' ? "overflow-y-auto" : ""} ${contentClassName}`}>
+                        {(maxHeight && (position === "left" || position === "right")) || size === 'full' ? (
                             <div className="p-6 min-h-0 flex-1">
                                 {children}
                             </div>
@@ -192,7 +213,7 @@ const Modal: React.FC<ModalProps> = ({
                     {/* Footer */}
                     {footer && (
                         <div
-                            className={`px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 rounded-2xl ${footerClassName}`}>
+                            className={`px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 ${size === 'full' ? '' : 'rounded-2xl'} ${footerClassName}`}>
                             {footer}
                         </div>
                     )}
@@ -235,6 +256,7 @@ export const ModalExample: React.FC = () => {
                         value={position}
                         onChange={(e) => setPosition(e.target.value as ModalPosition)}
                         className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                        disabled={size === 'full'}
                     >
                         <option value="left">Left</option>
                         <option value="right">Right</option>
@@ -255,7 +277,7 @@ export const ModalExample: React.FC = () => {
                         <option value="lg">Large</option>
                         <option value="xl">Extra Large</option>
                         <option value="2xl">2X Large</option>
-                        <option value="full">Full Width</option>
+                        <option value="full">Full Screen</option>
                     </select>
                 </div>
             </div>
@@ -284,21 +306,22 @@ export const ModalExample: React.FC = () => {
                     <div className="bg-gray-50 p-4 rounded-lg">
                         <h4 className="font-medium text-gray-900 mb-2">Features:</h4>
                         <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
-                            <li>Multiple sizes (xs, sm, md, lg, xl, 2xl, full)</li>
+                            <li>Multiple sizes (xs, sm, md, lg, xl, 2xl, full screen)</li>
                             <li>Three positions (left, right, center)</li>
                             <li>Customizable styling with className props</li>
                             <li>Keyboard navigation and accessibility</li>
-                            <li>Click outside to close</li>
+                            <li>Click outside to close (disabled for full screen)</li>
                             <li>Smooth animations</li>
                             <li>Optional footer with actions</li>
+                            <li>Full screen mode without margins or border radius</li>
                         </ul>
                     </div>
 
-                    {(position === 'left' || position === 'right') && (
+                    {(position === 'left' || position === 'right' || size === 'full') && (
                         <div className="space-y-2">
                             {Array.from({ length: 20 }, (_, i) => (
                                 <p key={i} className="text-gray-600">
-                                    This is paragraph {i + 1} to demonstrate scrolling in side panels.
+                                    This is paragraph {i + 1} to demonstrate scrolling in side panels{size === 'full' ? ' and full screen mode' : ''}.
                                 </p>
                             ))}
                         </div>
