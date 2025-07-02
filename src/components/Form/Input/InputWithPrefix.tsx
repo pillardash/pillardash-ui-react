@@ -102,7 +102,7 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
     const prefixClasses = `
         flex items-center rounded-l-[12px] border border-r-0 ${prefixSizeClasses[size]}
         ${error ? "border-red-500" : "border-gray-200"}
-        ${disabled ? "bg-gray-50" : "bg-gray-50"}
+        ${disabled ? "bg-gray-50" : ""}
         ${prefixClassName}
     `;
 

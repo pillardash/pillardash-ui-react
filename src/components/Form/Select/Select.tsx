@@ -193,7 +193,7 @@ export default function Select({
                     type='button'
                     className={`flex items-center justify-between rounded-lg border ${
                         error ? "border-red-500" : "border-gray-200"
-                    } bg-white shadow-sm ${
+                    } bg-gray-100 shadow-sm ${
                         sizeClasses[size]
                     } text-gray-700 hover:border-gray-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
                         disabled ? "cursor-not-allowed bg-gray-50 opacity-50" : ""
