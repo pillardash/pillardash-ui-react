@@ -61,8 +61,8 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
     };
 
     const prefixSizeClasses = {
-        sm: "px-3 text-xs",
-        md: "px-4 text-sm",
+        sm: "px-1 text-xs",
+        md: "px-2 text-sm",
         lg: "px-4 text-base",
     };
 
@@ -94,7 +94,7 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
         flex-1 rounded-none rounded-r-[12px] border-l-0 ${sizeClasses[size]} 
         ${error ? "border-red-500" : "border-gray-200"}
         ${disabled ? "bg-gray-100 text-gray-500 placeholder-gray-300" : "bg-gray-100 placeholder-gray-400 text-dark"}
-        focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary
+        focus:outline-none
         ${getIconPadding()}
         ${className}
     `;
@@ -136,37 +136,28 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
                     )}
 
                     {/* Input Section */}
-                    <div className={`relative ${prefixContent ? 'flex-1' : 'w-full'}`}>
+                    <div className={`relative ${prefixContent ? "flex-1" : "w-full"}`}>
                         {icon && iconPosition === "left" && (
-                            <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 z-10'>
+                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 z-10">
                                 {icon}
                             </div>
                         )}
 
-                        {type === "textarea" ? (
-                            <textarea
-                                {...commonInputProps}
-                                rows={4}
-                                className={`${commonInputProps.className} resize-none ${!prefixContent ? 'rounded-l-[12px] border-l' : ''}`}
-                                {...(restProps as TextareaHTMLAttributes<HTMLTextAreaElement>)}
-                            />
-                        ) : (
-                            <input
-                                {...commonInputProps}
-                                type={type}
-                                className={`${commonInputProps.className} ${!prefixContent ? 'rounded-l-[12px] border-l' : ''}`}
-                                {...(restProps as InputHTMLAttributes<HTMLInputElement>)}
-                            />
-                        )}
+                        <input
+                            {...commonInputProps}
+                            type={type}
+                            className={`${commonInputProps.className} ${!prefixContent ? "rounded-l-[12px] border-l" : "w-full border px-3"}`}
+                            {...(restProps as InputHTMLAttributes<HTMLInputElement>)}
+                        />
 
                         {icon && iconPosition === "right" && (
-                            <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 z-10'>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 z-10">
                                 {icon}
                             </div>
                         )}
 
                         {rightIcon && (
-                            <div className='absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10'>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer z-10">
                                 {rightIcon}
                             </div>
                         )}
@@ -175,13 +166,13 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
             </div>
 
             {helpText && !error && (
-                <p id={`${id}-help`} className='mt-1 text-sm text-gray-500'>
+                <p id={`${id}-help`} className="mt-1 text-sm text-gray-500">
                     {helpText}
                 </p>
             )}
 
             {error && (
-                <p id={`${id}-error`} className='mt-1 text-sm text-red-500'>
+                <p id={`${id}-error`} className="mt-1 text-sm text-red-500">
                     {error}
                 </p>
             )}
