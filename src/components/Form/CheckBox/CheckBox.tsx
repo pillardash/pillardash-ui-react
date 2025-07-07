@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 export type CheckBoxProps = {
     variant?: "check" | "dot" | "toggle";
@@ -6,7 +6,7 @@ export type CheckBoxProps = {
     checked?: boolean;
     disabled?: boolean;
     onChange?: (checked: boolean) => void;
-    label?: string;
+    label?: string|ReactNode;
     labelPosition?: "left" | "right";
 };
 
