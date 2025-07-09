@@ -11,7 +11,7 @@ export interface LoadingProps {
 
 const Loading: React.FC<LoadingProps> = ({
                                              size = 'md',
-                                             variant = 'spinner',
+                                             variant = 'pulse',
                                              color = 'primary',
                                              fullScreen = false,
                                              text,
