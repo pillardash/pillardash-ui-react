@@ -3,7 +3,7 @@ import React from 'react';
 export interface LoadingProps {
     size?: 'sm' | 'md' | 'lg' | 'xl';
     variant?: 'spinner' | 'dots' | 'pulse' | 'bars' | 'ripple';
-    color?: string; // Hex color (e.g., "#3B82F6") or Tailwind class (e.g., "blue-500")
+    color?: string;
     fullScreen?: boolean;
     text?: string;
     className?: string;
@@ -12,7 +12,7 @@ export interface LoadingProps {
 const Loading: React.FC<LoadingProps> = ({
                                              size = 'md',
                                              variant = 'spinner',
-                                             color = 'primary-color', // Default to Tailwind blue-500
+                                             color = 'primary',
                                              fullScreen = false,
                                              text,
                                              className = '',
