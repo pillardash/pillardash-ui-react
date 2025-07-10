@@ -6,6 +6,7 @@ export type { FileUploadProps } from './FileUpload/FileUpload';
 
 export { default as Input } from './Input/Input';
 export type { InputProps } from './Input/Input';
+export type { InputElement } from './Input/Input';
 
 export { default as InputWithPrefix } from './Input/InputWithPrefix';
 export type { InputWithPrefixProps } from './Input/InputWithPrefix';

@@ -1,13 +1,13 @@
 import React, { ChangeEvent, InputHTMLAttributes, TextareaHTMLAttributes } from "react";
-
+export type InputElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 export interface InputProps
     extends Omit<
         InputHTMLAttributes<HTMLInputElement> & TextareaHTMLAttributes<HTMLTextAreaElement>,
         "onChange" | "size"
     > {
-    id: string;
+    id?: string;
     value: string;
-    onChange?: (value: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onChange?: (value: React.ChangeEvent<InputElement>) => void;
     placeholder?: string;
     error?: string;
     label?: string;
@@ -40,7 +40,7 @@ const Input: React.FC<InputProps> = ({
     ...restProps
 }) => {
     // Handle input change
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<InputElement>) => {
         if (onChange) {
             onChange(e);
         }
