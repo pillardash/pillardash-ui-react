@@ -6,9 +6,9 @@ export interface InputWithPrefixProps
         InputHTMLAttributes<HTMLInputElement> & TextareaHTMLAttributes<HTMLTextAreaElement>,
         "onChange" | "size" | "prefix"
     > {
-    id: string;
+    id?: string;
     value: string;
-    onChange?: (value: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onChange?: (value: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
     error?: string;
     label?: string;
@@ -48,7 +48,7 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
                                                              ...restProps
                                                          }) => {
     // Handle input change
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (onChange) {
             onChange(e);
         }

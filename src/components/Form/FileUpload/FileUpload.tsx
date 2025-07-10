@@ -5,9 +5,13 @@ import { File, X } from "lucide-react";
 export interface FileUploadProps {
 	onFileChange: (file: File | null) => void;
 	direction?: "row" | "col";
+	maxFileSize?: string;
+	label?: string
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
+	label,
+	maxFileSize,
 	onFileChange,
 	direction = "col",
 }) => {
@@ -100,7 +104,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					/>
 					<p className="text-gray-900 text-sm">or drag and drop</p>
 					<p className="text-sm text-gray-500">
-						(Max. File size: 25 MB)
+						(Max. File size: {maxFileSize || '25'} MB)
 					</p>
 				</div>
 			) : (
