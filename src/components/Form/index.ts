@@ -1,5 +1,5 @@
-export { default as CheckBox } from './CheckBox/CheckBox';
-export type { CheckBoxProps } from './CheckBox/CheckBox';
+export { default as CheckBox, RadioGroup, CheckBoxDemo } from './CheckBox/CheckBox';
+export type { CheckBoxProps, RadioGroupProps } from './CheckBox/CheckBox';
 
 export { default as FileUpload } from './FileUpload/FileUpload';
 export type { FileUploadProps } from './FileUpload/FileUpload';
