@@ -2,11 +2,13 @@ import React from 'react';
 
 export interface LoadingProps {
     size?: 'sm' | 'md' | 'lg' | 'xl';
-    variant?: 'spinner' | 'dots' | 'pulse' | 'bars' | 'ripple';
+    variant?: 'spinner' | 'dots' | 'pulse' | 'bars' | 'ripple' | 'image';
     color?: string;
     fullScreen?: boolean;
     text?: string;
     className?: string;
+    image?: string;
+    imageEffect?: 'pulse' | 'bounce' | 'spin' | 'float' | 'heartbeat';
 }
 
 const Loading: React.FC<LoadingProps> = ({
@@ -16,6 +18,8 @@ const Loading: React.FC<LoadingProps> = ({
                                              fullScreen = false,
                                              text,
                                              className = '',
+                                             image,
+                                             imageEffect = 'pulse',
                                          }) => {
     // Check if color is a hex value or Tailwind class
     const isHexColor = color.startsWith('#');
@@ -44,11 +48,19 @@ const Loading: React.FC<LoadingProps> = ({
         };
         return { [styleMap[property]]: color };
     };
+
     const sizeClasses = {
         sm: 'w-4 h-4',
         md: 'w-8 h-8',
         lg: 'w-12 h-12',
         xl: 'w-16 h-16',
+    };
+
+    const imageSizeClasses = {
+        sm: 'w-8 h-8',
+        md: 'w-12 h-12',
+        lg: 'w-16 h-16',
+        xl: 'w-20 h-20',
     };
 
     const textSizeClasses = {
@@ -57,6 +69,41 @@ const Loading: React.FC<LoadingProps> = ({
         lg: 'text-base',
         xl: 'text-lg',
     };
+
+    const getImageEffectClasses = () => {
+        switch (imageEffect) {
+            case 'bounce':
+                return 'animate-bounce';
+            case 'spin':
+                return 'animate-spin';
+            case 'float':
+                return 'animate-pulse hover:animate-bounce';
+            case 'heartbeat':
+                return 'animate-ping';
+            default:
+                return 'animate-pulse';
+        }
+    };
+
+    const ImageLoader = () => (
+        <div className="relative flex items-center justify-center">
+            <img
+                src={image}
+                alt="Loading"
+                className={`${imageSizeClasses[size]} object-contain ${getImageEffectClasses()}`}
+                style={{
+                    filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))',
+                    animationDuration: imageEffect === 'heartbeat' ? '1.5s' : imageEffect === 'bounce' ? '1s' : '2s',
+                }}
+            />
+            {imageEffect === 'float' && (
+                <div
+                    className={`absolute inset-0 ${imageSizeClasses[size]} rounded-full bg-gradient-to-r from-purple-400 to-blue-400 opacity-20 animate-ping`}
+                    style={{ animationDuration: '2s' }}
+                />
+            )}
+        </div>
+    );
 
     const SpinnerLoader = () => (
         <div className="relative">
@@ -159,6 +206,10 @@ const Loading: React.FC<LoadingProps> = ({
     );
 
     const getLoader = () => {
+        if (variant === 'image' && image) {
+            return <ImageLoader />;
+        }
+
         switch (variant) {
             case 'dots':
                 return <DotsLoader />;
