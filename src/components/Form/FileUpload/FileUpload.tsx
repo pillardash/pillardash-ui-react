@@ -155,7 +155,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					onDrop={handleDrop}
 					onClick={() => !disabled && document.getElementById(inputId)?.click()}
 				>
-					<p className={`text-sm ${disabled ? "text-gray-400" : "text-teal-700 hover:underline"}`}>
+					<p className={`text-sm ${disabled ? "text-gray-400" : "text-primary-700 hover:underline"}`}>
 						{placeholder || "Click to Upload"}
 					</p>
 					<input
