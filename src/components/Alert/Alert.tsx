@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 
 import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from "lucide-react";
 
 export type AlertType = "success" | "error" | "info" | "warning";
 
 export interface AlertProps {
-    message: string;
+    message: ReactNode;
     description?: string;
     type?: AlertType;
     duration?: number;
@@ -101,7 +101,7 @@ const Alert: React.FC<AlertProps> = ({
                 <div className={`flex-shrink-0 ${iconColor}`}>{icon}</div>
                 <div className='ml-3 w-full'>
                     <div className='flex items-start justify-between'>
-                        <p className={`text-md font-semibold ${textColor}`}>{message}</p>
+                        <div className={`text-md font-semibold ${textColor}`}>{message}</div>
                         <button
                             onClick={handleClose}
                             className='text-gray-600 hover:text-gray-600 focus:outline-none'
