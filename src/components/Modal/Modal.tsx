@@ -123,13 +123,13 @@ const Modal: React.FC<ModalProps> = ({
         }
 
         if (position === 'left' || position === 'right') {
-            return `h-full ${maxHeight ? 'max-h-screen' : ''} rounded-2xl`;
+            return `h-full ${maxHeight ? 'max-h-screen' : ''}`;
         }
-        return `rounded-2xl ${maxHeight ? 'max-h-[90vh] overflow-hidden' : ''}`;
+        return `${maxHeight ? 'max-h-[90vh] overflow-hidden' : ''}`;
     };
 
     const getContainerPadding = (): string => {
-        return size === 'full' ? 'p-0' : 'p-4';
+        return size === 'full' ? 'p-0' : 'p-0';
     };
 
     if (!isOpen) return null;
@@ -213,7 +213,7 @@ const Modal: React.FC<ModalProps> = ({
                     {/* Footer */}
                     {footer && (
                         <div
-                            className={`px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 ${size === 'full' ? '' : 'rounded-2xl'} ${footerClassName}`}>
+                            className={`px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0 ${size === 'full' ? '' : ''} ${footerClassName}`}>
                             {footer}
                         </div>
                     )}
