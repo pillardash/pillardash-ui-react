@@ -204,7 +204,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 						<>
 							<div className="h-2.5 w-full rounded-full bg-secondary-200">
 								<div
-									className="h-2.5 rounded-full bg-gray-800 transition-all duration-300"
+									className="h-2.5 rounded-full bg-primary-800 transition-all duration-300"
 									style={{ width: `${uploadProgress}%` }}
 								></div>
 							</div>
