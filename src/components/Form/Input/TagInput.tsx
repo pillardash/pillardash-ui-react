@@ -37,7 +37,7 @@ const TagInput: React.FC<TagInputProps> = ({
                                                className = "",
                                                disabled = false,
                                                predefinedTags = [],
-                                               tagBackgroundColor = "bg-primary-300",
+                                               tagBackgroundColor = "bg-primary",
                                                tagTextColor = "text-white",
                                                maxTags,
                                                allowCustomTags = true,
