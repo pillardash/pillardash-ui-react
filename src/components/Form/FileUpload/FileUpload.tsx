@@ -200,8 +200,24 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					{/*</div>*/}
 					<div className="flex items-center justify-between">
 						<div className="flex items-center">
-							<div className="mr-3 rounded-lg bg-primary-100 p-2">
-								<File size={24} className="text-primary-500" />
+							<div className="mr-3 rounded-lg bg-primary-100 p-2 w-12 h-12 flex items-center justify-center overflow-hidden">
+								{uploadedFile.type.startsWith("image/") ? (
+									<img
+										src={URL.createObjectURL(uploadedFile)}
+										alt="preview"
+										width={48}
+										height={48}
+										className="object-cover w-full h-full rounded"
+									/>
+								) : uploadedFile.type === "application/pdf" ? (
+									<iframe
+										src={URL.createObjectURL(uploadedFile)}
+										title="PDF icon preview"
+										className="w-full h-full rounded"
+									/>
+								) : (
+									<File size={24} className="text-primary-500" />
+								)}
 							</div>
 							<div>
 								<p className="text-sm font-medium">{uploadedFile.name}</p>
@@ -216,30 +232,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 							<X size={16} />
 						</button>
 					</div>
-
-					{/* Preview */}
-					{uploadedFile.type.startsWith("image/") && (
-						<div className="overflow-hidden rounded-lg border w-full max-w-sm">
-							<img
-								src={URL.createObjectURL(uploadedFile)}
-								alt="Uploaded preview"
-								width={400}
-								height={300}
-								className="w-full h-auto object-contain"
-							/>
-						</div>
-					)}
-
-					{uploadedFile.type === "application/pdf" && (
-						<div className="w-full h-80 border rounded overflow-hidden">
-							<iframe
-								src={URL.createObjectURL(uploadedFile)}
-								title="PDF Preview"
-								className="w-full h-full"
-								frameBorder="0"
-							></iframe>
-						</div>
-					)}
 
 					{/* Progress Bar */}
 					{showProgress && uploadProgress < 100 && (
