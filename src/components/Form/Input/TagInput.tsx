@@ -8,8 +8,8 @@ export interface Tag {
 export interface TagInputProps {
     id?: string;
     label?: string;
-    value: Tag[];
-    onChange?: (tags: Tag[]) => void;
+    value: string[];
+    onChange?: (tags: string[]) => void;
     placeholder?: string;
     error?: string;
     required?: boolean;
@@ -66,12 +66,12 @@ const TagInput: React.FC<TagInputProps> = ({
         if (inputValue) {
             const filtered = predefinedTags.filter(tag =>
                 tag.label.toLowerCase().includes(inputValue.toLowerCase()) &&
-                !value.some(selectedTag => selectedTag.value === tag.value)
+                !value.some(selectedTag => selectedTag === tag.value)
             );
             setFilteredTags(filtered);
         } else {
             setFilteredTags(predefinedTags.filter(tag =>
-                !value.some(selectedTag => selectedTag.value === tag.value)
+                !value.some(selectedTag => selectedTag === tag.value)
             ));
         }
     }, [inputValue, predefinedTags, value]);
@@ -100,7 +100,7 @@ const TagInput: React.FC<TagInputProps> = ({
             addTag(inputValue.trim());
         } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
             // Remove last tag when backspace is pressed and input is empty
-            removeTag(value[value.length - 1].value);
+            removeTag(value[value.length - 1]);
         } else if (e.key === "Escape") {
             setIsDropdownOpen(false);
             setInputValue("");
@@ -111,7 +111,7 @@ const TagInput: React.FC<TagInputProps> = ({
         if (!tagValue || (maxTags && value.length >= maxTags)) return;
 
         // Check if tag already exists
-        const existingTag = value.find(tag => tag.value.toLowerCase() === tagValue.toLowerCase());
+        const existingTag = value.find(tag => tag.toLowerCase() === tagValue.toLowerCase());
         if (existingTag) return;
 
         // Check if it's a predefined tag
@@ -120,14 +120,11 @@ const TagInput: React.FC<TagInputProps> = ({
             tag.value.toLowerCase() === tagValue.toLowerCase()
         );
 
-        let newTag: Tag;
+        let newTag: string;
         if (predefinedTag) {
-            newTag = predefinedTag;
+            newTag = predefinedTag.value;
         } else if (allowCustomTags) {
-            newTag = {
-                label: tagValue,
-                value: tagValue
-            };
+            newTag = tagValue;
         } else {
             return; // Don't add if custom tags aren't allowed
         }
@@ -139,7 +136,7 @@ const TagInput: React.FC<TagInputProps> = ({
     };
 
     const removeTag = (tagId: string) => {
-        const newTags = value.filter(tag => tag.value !== tagId);
+        const newTags = value.filter(tag => tag !== tagId);
         onChange?.(newTags);
     };
 
@@ -173,14 +170,14 @@ const TagInput: React.FC<TagInputProps> = ({
                     {/* Render selected tags */}
                     {value.map((tag) => (
                         <span
-                            key={tag.value}
+                            key={tag}
                             className={`inline-flex items-center rounded-full ${tagBackgroundColor} ${tagTextColor} ${tagSizeClasses[size]} font-medium`}
                         >
-                            {tag.label}
+                            {tag}
                             {!disabled && (
                                 <button
                                     type="button"
-                                    onClick={() => removeTag(tag.value)}
+                                    onClick={() => removeTag(tag)}
                                     className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-black hover:bg-opacity-20"
                                 >
                                     <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
@@ -289,8 +286,8 @@ const TagInput: React.FC<TagInputProps> = ({
 
 // Demo component to show usage
 export const TagInputDemo = () => {
-    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-    const [selectedTags2, setSelectedTags2] = useState<Tag[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [selectedTags2, setSelectedTags2] = useState<string[]>([]);
 
     const predefinedTags: Tag[] = [
         {  label: "React", value: "react" },
