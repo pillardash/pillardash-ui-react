@@ -176,28 +176,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 			) : (
 				/* Uploaded File Display */
 				<div className={`rounded-lg border p-4 ${success ? "border-green-300 bg-green-50" : "border-gray-200"}`}>
-					{/*<div className="mb-2 flex items-center justify-between">*/}
-					{/*	<div className="flex items-center">*/}
-					{/*		<div className="mr-3 rounded-lg bg-primary-100 p-2">*/}
-					{/*			<File size={24} className="text-primary-500" />*/}
-					{/*		</div>*/}
-					{/*		<div>*/}
-					{/*			<p className="text-sm font-medium">*/}
-					{/*				{uploadedFile.name}*/}
-					{/*			</p>*/}
-					{/*			<p className="text-xs text-gray-500">*/}
-					{/*				{formatFileSize(uploadedFile.size)}*/}
-					{/*			</p>*/}
-					{/*		</div>*/}
-					{/*	</div>*/}
-					{/*	<button*/}
-					{/*		onClick={handleCancelUpload}*/}
-					{/*		className="text-red-500 hover:text-red-700 disabled:opacity-50"*/}
-					{/*		disabled={disabled}*/}
-					{/*	>*/}
-					{/*		<X size={16} />*/}
-					{/*	</button>*/}
-					{/*</div>*/}
 					<div className="flex items-center justify-between">
 						<div className="flex items-center">
 							<div className="mr-3 rounded-lg bg-primary-100 p-2 w-12 h-12 flex items-center justify-center overflow-hidden">

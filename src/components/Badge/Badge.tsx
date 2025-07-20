@@ -1,8 +1,9 @@
 import React from "react";
 
+export type BadgeVariant = "default" | "secondary" | "success" | "warning" | "error" | "info";
 export interface BadgeProps {
     children: React.ReactNode;
-    variant?: "default" | "secondary" | "success" | "warning" | "error" | "info";
+    variant?: BadgeVariant;
     size?: "sm" | "md" | "lg";
     className?: string;
     onClick?: () => void;
