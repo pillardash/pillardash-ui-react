@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, {useState, useRef, useEffect, useMemo} from "react";
 
 export interface Tag {
     value: string;
@@ -45,7 +45,6 @@ const TagInput: React.FC<TagInputProps> = ({
                                            }) => {
     const [inputValue, setInputValue] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -61,19 +60,17 @@ const TagInput: React.FC<TagInputProps> = ({
         lg: "text-base px-3 py-1.5",
     };
 
-    // Filter predefined tags based on input and exclude already selected tags
-    useEffect(() => {
-        if (inputValue) {
-            const filtered = predefinedTags.filter(tag =>
-                tag.label.toLowerCase().includes(inputValue.toLowerCase()) &&
+    const filteredTags = useMemo(() => {
+        if (!inputValue) {
+            return predefinedTags.filter(tag =>
                 !value.some(selectedTag => selectedTag === tag.value)
             );
-            setFilteredTags(filtered);
-        } else {
-            setFilteredTags(predefinedTags.filter(tag =>
-                !value.some(selectedTag => selectedTag === tag.value)
-            ));
         }
+
+        return predefinedTags.filter(tag =>
+            tag.label.toLowerCase().includes(inputValue.toLowerCase()) &&
+            !value.some(selectedTag => selectedTag === tag.value)
+        );
     }, [inputValue, predefinedTags, value]);
 
     // Handle clicking outside to close dropdown
