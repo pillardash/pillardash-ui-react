@@ -10,7 +10,7 @@ export type { InputProps, InputElement } from './Input/Input';
 export { default as InputWithPrefix } from './Input/InputWithPrefix';
 export type { InputWithPrefixProps } from './Input/InputWithPrefix';
 
-export { default, TagInputDemo } from './Input/TagInput';
+export { default as TagInput, TagInputDemo } from './Input/TagInput';
 export type { TagInputProps, Tag } from './Input/TagInput';
 
 export { default as Search } from './Search/Search';
