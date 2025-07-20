@@ -86,7 +86,7 @@ export const useAlert = (): AlertContextProps => {
 
 
 // Export a global alert function that can be used anywhere
-export const alert = {
+const alert = {
     success: (message: string, description?: string) => {
         if (!globalAlertRef) {
             console.warn("AlertProvider not mounted yet");
@@ -123,3 +123,5 @@ export const alert = {
         globalAlertRef.showAlert(props);
     },
 };
+
+export default alert;
