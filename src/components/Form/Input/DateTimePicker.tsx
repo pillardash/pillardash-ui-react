@@ -306,7 +306,18 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                 {isOpen && !disabled && (
                     <div
                         ref={dropdownRef}
-                        className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-[12px] shadow-lg backdrop-blur-sm bg-white/95 p-4 min-w-[320px]"
+                        className="absolute z-[1000] mt-1 bg-white border border-gray-200 rounded-[12px] shadow-lg backdrop-blur-sm bg-white/95 p-4 min-w-[320px]"
+                        style={{
+                            position: 'fixed',
+                            top: inputRef.current
+                                ? `${inputRef.current.getBoundingClientRect().bottom + window.scrollY + 4}px`
+                                : 'auto',
+                            left: inputRef.current
+                                ? `${inputRef.current.getBoundingClientRect().left + window.scrollX}px`
+                                : 'auto',
+                            // Add a small transition for smooth appearance
+                            animation: 'fadeIn 0.15s ease-out',
+                        }}
                     >
                         {/* Month/Year Navigation */}
                         <div className="flex items-center justify-between mb-4">
