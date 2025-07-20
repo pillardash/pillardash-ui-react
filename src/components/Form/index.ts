@@ -13,6 +13,9 @@ export type { InputWithPrefixProps } from './Input/InputWithPrefix';
 export { default as TagInput, TagInputDemo } from './Input/TagInput';
 export type { TagInputProps, Tag } from './Input/TagInput';
 
+export { default as DateTimePicker, DateTimePickerDemo } from './Input/DateTimePicker';
+export type { DateTimePickerProps, DateTimeValue } from './Input/DateTimePicker';
+
 export { default as Search } from './Search/Search';
 export type { SearchProps } from './Search/Search';
 
