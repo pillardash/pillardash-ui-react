@@ -1,5 +1,6 @@
 // SkeletonLoader.tsx
 import React from 'react';
+import Card from "../Cards/Card";
 
 // Internal CSS styles
 const skeletonStyles = `
@@ -366,6 +367,28 @@ export const SkeletonTable: React.FC<{
             ))}
         </div>
     </div>
+);
+
+export const CardStatsSkeleton = () => (
+    <Card>
+        <div className='mb-4'>
+            <SkeletonText width='180px' height='28px' />
+        </div>
+        <div className='mt-4 grid grid-cols-1 gap-4'>
+            <div className='rounded-lg bg-blue-50 p-4'>
+                <SkeletonText width='40px' height='32px' className='mb-1' />
+                <SkeletonText width='100px' height='16px' />
+            </div>
+            <div className='rounded-lg bg-green-50 p-4'>
+                <SkeletonText width='40px' height='32px' className='mb-1' />
+                <SkeletonText width='110px' height='16px' />
+            </div>
+            <div className='rounded-lg bg-yellow-50 p-4'>
+                <SkeletonText width='40px' height='32px' className='mb-1' />
+                <SkeletonText width='120px' height='16px' />
+            </div>
+        </div>
+    </Card>
 );
 
 export const SkeletonLoaderExample = () => {

@@ -15,6 +15,7 @@ export {
     SkeletonProfile,
     SkeletonList,
     SkeletonTable,
+    CardStatsSkeleton
 } from './SkeletonLoader';
 
 // Type exports
