@@ -1,4 +1,4 @@
-export function TableSkeleton({ columns, rows }: { columns: number; rows: number }) {
+export function TableSkeleton({ columns = 5, rows = 3 }: { columns?: number; rows?: number }) {
     return (
         <>
             {Array.from({ length: rows }).map((_, rowIndex) => (
