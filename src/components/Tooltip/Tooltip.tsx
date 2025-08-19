@@ -23,7 +23,7 @@ const Tooltip: React.FC<TooltipProps> = ({
 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [actualPosition, setActualPosition] = useState(position);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const tooltipRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLDivElement>(null);
 

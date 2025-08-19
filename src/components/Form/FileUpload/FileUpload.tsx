@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { File, X, AlertCircle, CheckCircle, Upload } from "lucide-react";
 
-// Fixed FileUpload component that properly handles multiple files
-interface FileUploadProps {
+export interface FileUploadProps {
 	onFileChange: (files: File[] | null) => void;
 	direction?: "row" | "col";
 	maxFileSize?: string;
