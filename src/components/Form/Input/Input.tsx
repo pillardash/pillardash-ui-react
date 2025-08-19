@@ -18,6 +18,7 @@ export interface InputProps
     rightIcon?: React.ReactNode;
     className?: string;
     size?: "sm" | "md" | "lg";
+    block?: boolean
 }
 
 const Input: React.FC<InputProps> = ({
@@ -36,6 +37,7 @@ const Input: React.FC<InputProps> = ({
     icon,
     iconPosition = "left",
     rightIcon,
+    block,
 
     ...restProps
 }) => {
@@ -80,7 +82,7 @@ const Input: React.FC<InputProps> = ({
     };
 
     return (
-        <div className='mb-4'>
+        <div className={`mb-4 ${block && "w-full"}`}>
             {label && <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-600'>
                 {label}
                 {required && <span className='ml-1 text-red-500'>*</span>}
