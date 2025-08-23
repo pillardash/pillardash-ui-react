@@ -11,6 +11,7 @@ import {
     Music,
     Archive,
 } from "lucide-react";
+import FileUpload from "../Form/FileUpload/FileUpload";
 
 // Types
 export interface FileItem {
@@ -282,3 +283,144 @@ const FileView: React.FC<FileViewProps> = ({
 };
 
 export default FileView;
+
+ export const FileViewSystemDemo = () => {
+    // Sample existing files (like from a property)
+    const [existingPropertyImages] = useState<FileItem[]>([
+        {
+            id: "1",
+            name: "property-front.jpg",
+            size: 2048000,
+            type: "image/jpeg",
+            url: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop"
+        },
+        {
+            id: "2",
+            name: "property-interior.jpg",
+            size: 1856000,
+            type: "image/jpeg",
+            url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop"
+        },
+        {
+            id: "3",
+            name: "floor-plan.pdf",
+            size: 524288,
+            type: "application/pdf",
+            url: "#"
+        }
+    ]);
+
+    const [newFiles, setNewFiles] = useState<File[] | null>(null);
+    const [documentFiles] = useState<FileItem[]>([
+        {
+            id: "doc1",
+            name: "contract.pdf",
+            size: 1024000,
+            type: "application/pdf",
+            url: "#"
+        },
+        {
+            id: "doc2",
+            name: "specifications.docx",
+            size: 512000,
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            url: "#"
+        }
+    ]);
+
+    const handleFileView = (index: number) => {
+        console.log("View file at index:", index);
+        // Implement view logic
+    };
+
+    const handleFileDelete = (index: number) => {
+        console.log("Delete file at index:", index);
+        // Implement delete logic
+    };
+
+    const handleFileUpdate = (index: number) => {
+        console.log("Update file at index:", index);
+        // Implement update logic
+    };
+
+    const handleFileDownload = (index: number) => {
+        console.log("Download file at index:", index);
+        // Implement download logic
+    };
+
+    return (
+        <div className="max-w-4xl mx-auto p-6 space-y-8">
+            <h1 className="text-2xl font-bold text-gray-800">File View System Demo</h1>
+
+            {/* Property Update Scenario */}
+            <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Property Update - Images</h2>
+                <p className="text-sm text-gray-600">
+                    Existing property images with option to add more during update
+                </p>
+
+                <FileUpload
+                    label="Property Images"
+                    description="Current images and upload new ones"
+                    existingFiles={existingPropertyImages}
+                    accept="image/*"
+                    multiple={true}
+                    onFileChange={setNewFiles}
+                    placeholder="Add more images"
+                />
+            </div>
+
+            {/* Standalone FileView - Grid Layout */}
+            <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Document Files - Grid View</h2>
+                <FileView
+                    files={documentFiles}
+                    layout="grid"
+                    onView={handleFileView}
+                    onDelete={handleFileDelete}
+                    onUpdate={handleFileUpdate}
+                    onDownload={handleFileDownload}
+                    showDownload={true}
+                />
+            </div>
+
+            {/* Standalone FileView - List Layout */}
+            <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Property Images - List View</h2>
+                <FileView
+                    files={existingPropertyImages}
+                    layout="list"
+                    onView={handleFileView}
+                    onDelete={handleFileDelete}
+                    onUpdate={handleFileUpdate}
+                    showUpdate={true}
+                    showDelete={true}
+                />
+            </div>
+
+            {/* FileView with limited actions */}
+            <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Read-Only Files</h2>
+                <p className="text-sm text-gray-600">Files with only view action enabled</p>
+                <FileView
+                    files={existingPropertyImages}
+                    layout="grid"
+                    onView={handleFileView}
+                    showDelete={false}
+                    showUpdate={false}
+                    showDownload={false}
+                />
+            </div>
+
+            {/* Empty state */}
+            <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Empty State</h2>
+                <FileView
+                    files={[]}
+                    onView={handleFileView}
+                    onDelete={handleFileDelete}
+                />
+            </div>
+        </div>
+    );
+}

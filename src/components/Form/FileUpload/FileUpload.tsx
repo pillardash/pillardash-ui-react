@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { File, X, AlertCircle, CheckCircle, Upload } from "lucide-react";
+import { AlertCircle, CheckCircle, Upload } from "lucide-react";
+import {FileItem, FileView} from "../../Document";
 
 export interface FileUploadProps {
 	onFileChange: (files: File[] | null) => void;
+	existingFiles?: FileItem[];
 	direction?: "row" | "col";
 	maxFileSize?: string;
 	label?: string;
@@ -36,11 +38,24 @@ const FileUpload: React.FC<FileUploadProps> = ({
 												   id,
 												   maxFileSize,
 												   onFileChange,
+												   existingFiles = [],
 												   direction = "col",
 											   }) => {
 	const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 	const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
 	const [isDragOver, setIsDragOver] = useState(false);
+
+	// Convert existing files and uploaded files to FileItem format
+	const allFiles: FileItem[] = [
+		...existingFiles,
+		...uploadedFiles.map(file => ({
+			name: file.name,
+			size: file.size,
+			type: file.type,
+			file,
+			uploadProgress: uploadProgress[`${file.name}-${file.size}`] || 100
+		}))
+	];
 
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files.length > 0) {
@@ -54,7 +69,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					const fileKey = `${file.name}-${file.size}`;
 					setUploadProgress(prev => ({ ...prev, [fileKey]: 10 }));
 
-					// Simulate file upload progress
 					const interval = setInterval(() => {
 						setUploadProgress(prev => {
 							const currentProgress = prev[fileKey] || 0;
@@ -101,7 +115,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					const fileKey = `${file.name}-${file.size}`;
 					setUploadProgress(prev => ({ ...prev, [fileKey]: 10 }));
 
-					// Simulate file upload progress
 					const interval = setInterval(() => {
 						setUploadProgress(prev => {
 							const currentProgress = prev[fileKey] || 0;
@@ -119,30 +132,23 @@ const FileUpload: React.FC<FileUploadProps> = ({
 		}
 	};
 
-	const handleRemoveFile = (index: number) => {
-		const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
+	const handleDeleteFile = (index: number) => {
+		if (index < existingFiles.length) {
+			// This is an existing file - you might want to handle this differently
+			// For now, we'll just ignore it since we can't modify existing files
+			return;
+		}
+
+		const uploadedFileIndex = index - existingFiles.length;
+		const updatedFiles = uploadedFiles.filter((_, i) => i !== uploadedFileIndex);
 		setUploadedFiles(updatedFiles);
 		onFileChange(updatedFiles.length > 0 ? updatedFiles : null);
-	};
-
-	const handleCancelAll = () => {
-		setUploadedFiles([]);
-		setUploadProgress({});
-		onFileChange(null);
-	};
-
-	const formatFileSize = (bytes: number) => {
-		if (bytes === 0) return '0 Bytes';
-		const k = 1024;
-		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 	};
 
 	const inputId = id || `file-upload-${Math.random().toString(36).substr(2, 9)}`;
 
 	return (
-		<div className={`space-y-2 ${className}`}>
+		<div className={`space-y-4 ${className}`}>
 			{/* Label */}
 			{label && (
 				<label
@@ -157,6 +163,21 @@ const FileUpload: React.FC<FileUploadProps> = ({
 			{/* Description */}
 			{description && (
 				<p className="text-sm text-gray-600">{description}</p>
+			)}
+
+			{/* Existing Files */}
+			{existingFiles.length > 0 && (
+				<div>
+					<h4 className="text-sm font-medium text-gray-700 mb-2">
+						Current Files ({existingFiles.length})
+					</h4>
+					<FileView
+						files={existingFiles}
+						showDelete={false}
+						showUpdate={false}
+						layout="grid"
+					/>
+				</div>
 			)}
 
 			{/* File Upload Area */}
@@ -177,7 +198,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 				<Upload size={24} className="text-gray-400" />
 				<div>
 					<p className={`text-sm font-medium ${disabled ? "text-gray-400" : "text-blue-600 hover:underline"}`}>
-						{placeholder || "Click to Upload"}
+						{placeholder || (existingFiles.length > 0 ? "Add more files" : "Click to Upload")}
 					</p>
 					<p className="text-gray-500 text-sm">or drag and drop</p>
 					<p className="text-sm text-gray-500">
@@ -201,87 +222,33 @@ const FileUpload: React.FC<FileUploadProps> = ({
 				/>
 			</div>
 
-			{/* Uploaded Files Display */}
+			{/* New Uploaded Files */}
 			{uploadedFiles.length > 0 && (
-				<div className="space-y-2">
-					<div className="flex items-center justify-between">
+				<div>
+					<div className="flex items-center justify-between mb-2">
 						<h4 className="text-sm font-medium text-gray-700">
-							Uploaded Files ({uploadedFiles.length})
+							New Files ({uploadedFiles.length})
 						</h4>
-						{uploadedFiles.length > 1 && (
-							<button
-								onClick={handleCancelAll}
-								className="text-xs text-red-500 hover:text-red-700"
-								disabled={disabled}
-							>
-								Remove All
-							</button>
-						)}
+						<button
+							onClick={() => {
+								setUploadedFiles([]);
+								setUploadProgress({});
+								onFileChange(null);
+							}}
+							className="text-xs text-red-500 hover:text-red-700"
+							disabled={disabled}
+						>
+							Remove All New Files
+						</button>
 					</div>
 
-					{uploadedFiles.map((file, index) => {
-						const fileKey = `${file.name}-${file.size}`;
-						const progress = uploadProgress[fileKey] || 100;
-
-						return (
-							<div
-								key={fileKey}
-								className={`rounded-lg border p-4 ${success ? "border-green-300 bg-green-50" : "border-gray-200"}`}
-							>
-								<div className="flex items-center justify-between">
-									<div className="flex items-center">
-										<div className="mr-3 rounded-lg bg-blue-100 p-2 w-12 h-12 flex items-center justify-center overflow-hidden">
-											{file.type.startsWith("image/") ? (
-												<img
-													src={URL.createObjectURL(file)}
-													alt="preview"
-													className="object-cover w-full h-full rounded"
-												/>
-											) : file.type === "application/pdf" ? (
-												<div className="text-red-600 text-xs font-bold">PDF</div>
-											) : (
-												<File size={24} className="text-blue-500" />
-											)}
-										</div>
-										<div>
-											<p className="text-sm font-medium">{file.name}</p>
-											<p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-										</div>
-									</div>
-									<button
-										onClick={() => handleRemoveFile(index)}
-										className="text-red-500 hover:text-red-700 disabled:opacity-50"
-										disabled={disabled}
-									>
-										<X size={16} />
-									</button>
-								</div>
-
-								{/* Progress Bar */}
-								{showProgress && progress < 100 && (
-									<>
-										<div className="mt-2 h-2.5 w-full rounded-full bg-gray-200">
-											<div
-												className="h-2.5 rounded-full bg-blue-600 transition-all duration-300"
-												style={{ width: `${progress}%` }}
-											></div>
-										</div>
-										<p className="mt-1 text-right text-xs text-gray-500">
-											{progress}%
-										</p>
-									</>
-								)}
-
-								{/* Success indicator */}
-								{showProgress && progress === 100 && (
-									<div className="flex items-center text-green-600 text-sm mt-2">
-										<CheckCircle size={16} className="mr-1" />
-										Upload complete
-									</div>
-								)}
-							</div>
-						);
-					})}
+					<FileView
+						files={allFiles.slice(existingFiles.length)}
+						onDelete={(index) => handleDeleteFile(index + existingFiles.length)}
+						showUpdate={false}
+						showView={false}
+						layout="grid"
+					/>
 				</div>
 			)}
 
@@ -308,6 +275,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 		</div>
 	);
 };
+
 
 export default FileUpload;
 
