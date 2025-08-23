@@ -30,3 +30,5 @@ export * from "./components/Tooltip";
 
 // Badge
 export * from "./components/Badge";
+
+export * from "./components/Document";
