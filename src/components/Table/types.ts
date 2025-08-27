@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import {LucideIcon} from "lucide-react";
 
 export interface TableProps<T> {
     data: T[];
@@ -15,6 +16,7 @@ export interface TableProps<T> {
     showPagination?: boolean;
     onRowClick?: (item: T) => void;
     useCardLayout?: boolean;
+    emptyState?: ReactNode;
 }
 
 export interface Column<T> {
@@ -37,7 +39,7 @@ export type TableDropdownProps = {
     actions: {
         label: string;
         onClick: () => void;
-        icon?: React.ReactNode;
+        icon?: React.ReactNode | LucideIcon;
         disabled?: boolean;
         variant?: "default" | "danger";
     }[];

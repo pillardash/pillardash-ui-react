@@ -17,6 +17,7 @@ export default function Table<T>({
                                      showPagination = true,
                                      onRowClick,
                                      useCardLayout = false,
+                                     emptyState,
                                  }: TableProps<T>) {
     const totalItemsCount = totalItems || data.length;
     const totalPages = Math.ceil(totalItemsCount / itemsPerPage);
@@ -27,6 +28,11 @@ export default function Table<T>({
             onRowClick(item);
         }
     };
+
+    // Default empty state component
+    const defaultEmptyState = (
+        <EmptyStateCard title="No Record found" />
+    );
 
     const renderCardLayout = () => (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -72,7 +78,7 @@ export default function Table<T>({
                 ))
                 : !loading && (
                 <div className="col-span-full">
-                    <EmptyStateCard title="No Record found" />
+                    {emptyState || defaultEmptyState}
                 </div>
             )}
         </div>
@@ -120,8 +126,8 @@ export default function Table<T>({
                     ))
                     : !loading && (
                     <tr>
-                        <td colSpan={columns.length}>
-                            <EmptyStateCard title="No Record found" />
+                        <td colSpan={columns.length} className="px-6 py-12 text-center">
+                            {emptyState || defaultEmptyState}
                         </td>
                     </tr>
                 )}
