@@ -1,5 +1,4 @@
 import React, { ReactNode } from "react";
-import {LucideIcon} from "lucide-react";
 
 export interface TableProps<T> {
     data: T[];
@@ -39,7 +38,7 @@ export type TableDropdownProps = {
     actions: {
         label: string;
         onClick: () => void;
-        icon?: React.ReactNode | LucideIcon;
+        icon?: React.ReactNode;
         disabled?: boolean;
         variant?: "default" | "danger";
     }[];
