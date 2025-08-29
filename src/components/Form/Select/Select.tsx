@@ -53,6 +53,7 @@ export default function Select({
                                }: SelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
 
     // Handle both single and multi-select values
     const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>(() => {
@@ -68,6 +69,25 @@ export default function Select({
     });
 
     const selectRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Calculate dropdown position
+    useEffect(() => {
+        if (isOpen && selectRef.current) {
+            const selectRect = selectRef.current.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const dropdownHeight = 250; // Approximate max dropdown height
+            const spaceBelow = viewportHeight - selectRect.bottom;
+            const spaceAbove = selectRect.top;
+
+            // If there's not enough space below but there's enough space above, position on top
+            if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+                setDropdownPosition('top');
+            } else {
+                setDropdownPosition('bottom');
+            }
+        }
+    }, [isOpen]);
 
     // Filter options based on search term if searchable
     const filteredOptions = searchable
@@ -179,6 +199,11 @@ export default function Select({
         return selectedOptions.some(selected => selected.value === option.value);
     };
 
+    // Dropdown positioning classes
+    const dropdownPositionClasses = dropdownPosition === 'top'
+        ? 'bottom-full mb-1' // Position above the select button
+        : 'top-full mt-1';   // Position below the select button (default)
+
     return (
         <div ref={selectRef} className={`${fullWidth ? "w-full" : "w-fit"} mb-4`}>
             {label && (
@@ -242,11 +267,17 @@ export default function Select({
 
                 {isOpen && (
                     <div
-                        className='absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg'
+                        ref={dropdownRef}
+                        className={`absolute z-[9999] w-full rounded-lg border border-gray-200 bg-white shadow-xl ${dropdownPositionClasses}`}
                         role='listbox'
+                        style={{
+                            // Additional inline styles for maximum compatibility
+                            zIndex: 9999,
+                            position: 'absolute',
+                        }}
                     >
                         {searchable && (
-                            <div className='sticky top-0 border-b border-gray-100 bg-white p-3'>
+                            <div className='sticky top-0 border-b border-gray-100 bg-white p-3 z-[10000]'>
                                 <input
                                     type='text'
                                     className='w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-200'
