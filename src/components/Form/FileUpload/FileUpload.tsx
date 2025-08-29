@@ -50,38 +50,25 @@ const FileUpload: React.FC<FileUploadProps> = ({
 	// Determine if we're in replace mode (single file replacement)
 	const isReplaceMode = replaceMode ?? (!multiple && existingFiles.length > 0);
 
-	// For single file mode, combine existing and uploaded into one display
-	const displayFiles: FileItem[] = (() => {
+	// Get the current file to display (for single file mode)
+	const getCurrentFile = (): FileItem | null => {
 		if (!multiple) {
-			// Single file mode
+			// Single file mode - prioritize uploaded file, then existing
 			if (uploadedFiles.length > 0) {
-				// Show the new uploaded file
-				return [{
-					name: uploadedFiles[0].name,
-					size: uploadedFiles[0].size,
-					type: uploadedFiles[0].type,
-					file: uploadedFiles[0],
-					uploadProgress: uploadProgress[`${uploadedFiles[0].name}-${uploadedFiles[0].size}`] || 100
-				}];
-			} else if (existingFiles.length > 0) {
-				// Show existing file
-				return [existingFiles[0]];
-			}
-			return [];
-		} else {
-			// Multiple file mode - show existing + uploaded separately
-			return [
-				...existingFiles,
-				...uploadedFiles.map(file => ({
+				const file = uploadedFiles[0];
+				return {
 					name: file.name,
 					size: file.size,
 					type: file.type,
 					file,
 					uploadProgress: uploadProgress[`${file.name}-${file.size}`] || 100
-				}))
-			];
+				};
+			} else if (existingFiles.length > 0) {
+				return existingFiles[0];
+			}
 		}
-	})();
+		return null;
+	};
 
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files && e.target.files.length > 0) {
@@ -174,21 +161,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
 		}
 	};
 
-	const handleDeleteFile = (index: number) => {
-		if (!multiple) {
-			// Single file mode - remove the file completely
-			setUploadedFiles([]);
-			setUploadProgress({});
-			onFileChange(null);
-		} else {
-			// Multiple file mode - only remove if it's an uploaded file
-			if (index >= existingFiles.length) {
-				const uploadedFileIndex = index - existingFiles.length;
-				const updatedFiles = uploadedFiles.filter((_, i) => i !== uploadedFileIndex);
-				setUploadedFiles(updatedFiles);
-				onFileChange(updatedFiles.length > 0 ? updatedFiles : null);
-			}
-		}
+	const handleDeleteFile = () => {
+		// Remove the uploaded file
+		setUploadedFiles([]);
+		setUploadProgress({});
+		onFileChange(null);
 	};
 
 	const handleReplaceFile = () => {
@@ -197,6 +174,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 	};
 
 	const inputId = id || `file-upload-${Math.random().toString(36).substr(2, 9)}`;
+	const currentFile = getCurrentFile();
 
 	return (
 		<div className={`space-y-4 ${className}`}>
@@ -216,8 +194,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
 				<p className="text-sm text-gray-600">{description}</p>
 			)}
 
-			{/* Single File Display (Replace Mode) */}
-			{!multiple && displayFiles.length > 0 ? (
+			{/* Single File Display */}
+			{!multiple && currentFile ? (
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
 						<h4 className="text-sm font-medium text-gray-700">
@@ -233,8 +211,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					</div>
 
 					<FileView
-						files={displayFiles}
-						onDelete={() => handleDeleteFile(0)}
+						file={currentFile}
+						onDelete={handleDeleteFile}
 						showUpdate={false}
 						showView={true}
 						showDelete={true}
@@ -253,24 +231,26 @@ const FileUpload: React.FC<FileUploadProps> = ({
 						required={required}
 					/>
 				</div>
-			) : (
-				/* File Upload Area */
-				<div>
-					{/* Show existing files for multiple mode */}
-					{multiple && existingFiles.length > 0 && (
-						<div className="mb-4">
-							<h4 className="text-sm font-medium text-gray-700 mb-2">
-								Current Files ({existingFiles.length})
-							</h4>
-							<FileView
-								files={existingFiles}
-								showDelete={false}
-								showUpdate={false}
-								layout="grid"
-							/>
-						</div>
-					)}
+			) : multiple && existingFiles.length > 0 ? (
+				/* Multiple File Mode with Existing Files */
+				<div className="space-y-4">
+					<div className="mb-4">
+						<h4 className="text-sm font-medium text-gray-700 mb-2">
+							Current Files ({existingFiles.length})
+						</h4>
+						{existingFiles.map((file, index) => (
+							<div key={file.id || index} className="mb-2">
+								<FileView
+									file={file}
+									showDelete={false}
+									showUpdate={false}
+									layout="list"
+								/>
+							</div>
+						))}
+					</div>
 
+					{/* File Upload Area for Multiple Mode */}
 					<div
 						className={`
               flex flex-${direction} gap-2 rounded-lg border-2 border-dashed p-8 text-center items-center
@@ -288,25 +268,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
 						<Upload size={24} className="text-gray-400" />
 						<div>
 							<p className={`text-sm font-medium ${disabled ? "text-gray-400" : "text-blue-600 hover:underline"}`}>
-								{placeholder ||
-									(!multiple && existingFiles.length > 0 ? "Replace file" :
-										existingFiles.length > 0 ? "Add more files" : "Click to Upload")
-								}
+								{placeholder || "Add more files"}
 							</p>
 							<p className="text-gray-500 text-sm">or drag and drop</p>
 							<p className="text-sm text-gray-500">
 								(Max. File size: {maxFileSize || '25'} MB)
 							</p>
-							{multiple && (
-								<p className="text-xs text-gray-400 mt-1">
-									Multiple files allowed
-								</p>
-							)}
-							{!multiple && (
-								<p className="text-xs text-gray-400 mt-1">
-									Single file only
-								</p>
-							)}
+							<p className="text-xs text-gray-400 mt-1">
+								Multiple files allowed
+							</p>
 						</div>
 						<input
 							id={inputId}
@@ -320,8 +290,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
 						/>
 					</div>
 
-					{/* New Uploaded Files (Multiple Mode) */}
-					{multiple && uploadedFiles.length > 0 && (
+					{/* New Uploaded Files */}
+					{uploadedFiles.length > 0 && (
 						<div className="mt-4">
 							<div className="flex items-center justify-between mb-2">
 								<h4 className="text-sm font-medium text-gray-700">
@@ -340,21 +310,78 @@ const FileUpload: React.FC<FileUploadProps> = ({
 								</button>
 							</div>
 
-							<FileView
-								files={uploadedFiles.map(file => ({
-									name: file.name,
-									size: file.size,
-									type: file.type,
-									file,
-									uploadProgress: uploadProgress[`${file.name}-${file.size}`] || 100
-								}))}
-								onDelete={(index) => handleDeleteFile(index + existingFiles.length)}
-								showUpdate={false}
-								showView={false}
-								layout="grid"
-							/>
+							{uploadedFiles.map((file, index) => (
+								<div key={`${file.name}-${file.size}`} className="mb-2">
+									<FileView
+										file={{
+											name: file.name,
+											size: file.size,
+											type: file.type,
+											file,
+											uploadProgress: uploadProgress[`${file.name}-${file.size}`] || 100
+										}}
+										onDelete={() => {
+											const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
+											setUploadedFiles(updatedFiles);
+											onFileChange(updatedFiles.length > 0 ? updatedFiles : null);
+										}}
+										showUpdate={false}
+										showView={false}
+										layout="list"
+									/>
+								</div>
+							))}
 						</div>
 					)}
+				</div>
+			) : (
+				/* File Upload Area - No Files */
+				<div
+					className={`
+              flex flex-${direction} gap-2 rounded-lg border-2 border-dashed p-8 text-center items-center
+              ${direction === "row" ? "justify-center" : ""}
+              ${isDragOver ? "border-blue-400 bg-blue-50" : "border-gray-300"}
+              ${error ? "border-red-300 bg-red-50" : ""}
+              ${success ? "border-green-300 bg-green-50" : ""}
+              ${disabled ? "opacity-50 cursor-not-allowed bg-gray-50" : "cursor-pointer hover:border-gray-400"}
+            `}
+					onDragOver={handleDragOver}
+					onDragLeave={handleDragLeave}
+					onDrop={handleDrop}
+					onClick={() => !disabled && document.getElementById(inputId)?.click()}
+				>
+					<Upload size={24} className="text-gray-400" />
+					<div>
+						<p className={`text-sm font-medium ${disabled ? "text-gray-400" : "text-blue-600 hover:underline"}`}>
+							{placeholder ||
+								(!multiple && existingFiles.length > 0 ? "Replace file" :
+									existingFiles.length > 0 ? "Add more files" : "Click to Upload")
+							}
+						</p>
+						<p className="text-gray-500 text-sm">or drag and drop</p>
+						<p className="text-sm text-gray-500">
+							(Max. File size: {maxFileSize || '25'} MB)
+						</p>
+						{multiple ? (
+							<p className="text-xs text-gray-400 mt-1">
+								Multiple files allowed
+							</p>
+						) : (
+							<p className="text-xs text-gray-400 mt-1">
+								Single file only
+							</p>
+						)}
+					</div>
+					<input
+						id={inputId}
+						type="file"
+						className="hidden"
+						onChange={handleFileUpload}
+						accept={accept}
+						multiple={multiple}
+						disabled={disabled}
+						required={required}
+					/>
 				</div>
 			)}
 
@@ -381,7 +408,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 		</div>
 	);
 };
-
 
 export default FileUpload;
 

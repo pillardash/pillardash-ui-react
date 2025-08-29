@@ -25,11 +25,11 @@ export interface FileItem {
 }
 
 export interface FileViewProps {
-    files: FileItem[];
-    onDelete?: (index: number) => void;
-    onUpdate?: (index: number) => void;
-    onView?: (index: number) => void;
-    onDownload?: (index: number) => void;
+    file: FileItem | null;
+    onDelete?: () => void;
+    onUpdate?: () => void;
+    onView?: () => void;
+    onDownload?: () => void;
     showActions?: boolean;
     showDelete?: boolean;
     showUpdate?: boolean;
@@ -41,7 +41,7 @@ export interface FileViewProps {
 }
 
 const FileView: React.FC<FileViewProps> = ({
-                                               files,
+                                               file,
                                                onDelete,
                                                onUpdate,
                                                onView,
@@ -55,7 +55,7 @@ const FileView: React.FC<FileViewProps> = ({
                                                maxPreviewSize = 200,
                                                className = ""
                                            }) => {
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [isHovered, setIsHovered] = useState(false);
 
     const formatFileSize = (bytes: number) => {
         if (bytes === 0) return '0 Bytes';
@@ -112,54 +112,121 @@ const FileView: React.FC<FileViewProps> = ({
         );
     };
 
-    if (files.length === 0) {
+    if (!file) {
         return (
             <div className={`text-center py-8 text-gray-500 ${className}`}>
                 <File size={48} className="mx-auto mb-2 text-gray-300" />
-                <p>No files to display</p>
+                <p>No file to display</p>
             </div>
         );
     }
 
     if (layout === "list") {
         return (
-            <div className={`space-y-2 ${className}`}>
-                {files.map((file, index) => (
-                    <div
-                        key={file.id || index}
-                        className="flex items-center p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                        onMouseEnter={() => setHoveredIndex(index)}
-                        onMouseLeave={() => setHoveredIndex(null)}
-                    >
-                        <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100 mr-3">
-                            {getFilePreview(file)}
-                        </div>
+            <div className={`${className}`}>
+                <div
+                    className="flex items-center p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100 mr-3">
+                        {getFilePreview(file)}
+                    </div>
 
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-                            <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                        <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
 
-                            {/* Upload Progress */}
-                            {file.uploadProgress !== undefined && file.uploadProgress < 100 && (
-                                <div className="mt-2">
-                                    <div className="h-1.5 w-full rounded-full bg-gray-200">
-                                        <div
-                                            className="h-1.5 rounded-full bg-blue-600 transition-all duration-300"
-                                            style={{ width: `${file.uploadProgress}%` }}
-                                        />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-1">{file.uploadProgress}%</p>
+                        {/* Upload Progress */}
+                        {file.uploadProgress !== undefined && file.uploadProgress < 100 && (
+                            <div className="mt-2">
+                                <div className="h-1.5 w-full rounded-full bg-gray-200">
+                                    <div
+                                        className="h-1.5 rounded-full bg-blue-600 transition-all duration-300"
+                                        style={{ width: `${file.uploadProgress}%` }}
+                                    />
                                 </div>
+                                <p className="text-xs text-gray-500 mt-1">{file.uploadProgress}%</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Actions */}
+                    {showActions && (isHovered || file.uploadProgress === undefined) && (
+                        <div className="flex items-center space-x-2">
+                            {showView && onView && (
+                                <button
+                                    onClick={onView}
+                                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                                    title="View"
+                                >
+                                    <Eye size={16} />
+                                </button>
+                            )}
+                            {showDownload && onDownload && (
+                                <button
+                                    onClick={onDownload}
+                                    className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                                    title="Download"
+                                >
+                                    <Download size={16} />
+                                </button>
+                            )}
+                            {showUpdate && onUpdate && (
+                                <button
+                                    onClick={onUpdate}
+                                    className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition-colors"
+                                    title="Update"
+                                >
+                                    <Edit3 size={16} />
+                                </button>
+                            )}
+                            {showDelete && onDelete && (
+                                <button
+                                    onClick={onDelete}
+                                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                    title="Delete"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
                             )}
                         </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
-                        {/* Actions */}
-                        {showActions && (hoveredIndex === index || file.uploadProgress === undefined) && (
-                            <div className="flex items-center space-x-2">
+    // Grid Layout (Single File)
+    return (
+        <div className={`flex justify-center ${className}`}>
+            <div
+                className="group relative bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden max-w-xs"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                {/* File Preview */}
+                <div className="aspect-square w-full bg-gray-50 overflow-hidden">
+                    {getFilePreview(file)}
+
+                    {/* Upload Progress Overlay */}
+                    {file.uploadProgress !== undefined && file.uploadProgress < 100 && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div className="text-center text-white">
+                                <div className="w-16 h-16 rounded-full border-4 border-white border-t-transparent animate-spin mb-2"></div>
+                                <p className="text-sm">{file.uploadProgress}%</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Actions Overlay */}
+                    {showActions && (isHovered || file.uploadProgress === undefined) && (
+                        <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="flex space-x-2">
                                 {showView && onView && (
                                     <button
-                                        onClick={() => onView(index)}
-                                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                                        onClick={onView}
+                                        className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full transition-all"
                                         title="View"
                                     >
                                         <Eye size={16} />
@@ -167,8 +234,8 @@ const FileView: React.FC<FileViewProps> = ({
                                 )}
                                 {showDownload && onDownload && (
                                     <button
-                                        onClick={() => onDownload(index)}
-                                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                                        onClick={onDownload}
+                                        className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full transition-all"
                                         title="Download"
                                     >
                                         <Download size={16} />
@@ -176,8 +243,8 @@ const FileView: React.FC<FileViewProps> = ({
                                 )}
                                 {showUpdate && onUpdate && (
                                     <button
-                                        onClick={() => onUpdate(index)}
-                                        className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-full transition-colors"
+                                        onClick={onUpdate}
+                                        className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full transition-all"
                                         title="Update"
                                     >
                                         <Edit3 size={16} />
@@ -185,242 +252,28 @@ const FileView: React.FC<FileViewProps> = ({
                                 )}
                                 {showDelete && onDelete && (
                                     <button
-                                        onClick={() => onDelete(index)}
-                                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                        onClick={onDelete}
+                                        className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-red-600 rounded-full transition-all"
                                         title="Delete"
                                     >
                                         <Trash2 size={16} />
                                     </button>
                                 )}
                             </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
-    // Grid Layout
-    return (
-        <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 ${className}`}>
-            {files.map((file, index) => (
-                <div
-                    key={file.id || index}
-                    className="group relative bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
-                    onMouseEnter={() => setHoveredIndex(index)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                >
-                    {/* File Preview */}
-                    <div className="aspect-square w-full bg-gray-50 overflow-hidden">
-                        {getFilePreview(file)}
-
-                        {/* Upload Progress Overlay */}
-                        {file.uploadProgress !== undefined && file.uploadProgress < 100 && (
-                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                <div className="text-center text-white">
-                                    <div className="w-16 h-16 rounded-full border-4 border-white border-t-transparent animate-spin mb-2"></div>
-                                    <p className="text-sm">{file.uploadProgress}%</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Actions Overlay */}
-                        {showActions && (hoveredIndex === index || file.uploadProgress === undefined) && (
-                            <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <div className="flex space-x-2">
-                                    {showView && onView && (
-                                        <button
-                                            onClick={() => onView(index)}
-                                            className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full transition-all"
-                                            title="View"
-                                        >
-                                            <Eye size={16} />
-                                        </button>
-                                    )}
-                                    {showDownload && onDownload && (
-                                        <button
-                                            onClick={() => onDownload(index)}
-                                            className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full transition-all"
-                                            title="Download"
-                                        >
-                                            <Download size={16} />
-                                        </button>
-                                    )}
-                                    {showUpdate && onUpdate && (
-                                        <button
-                                            onClick={() => onUpdate(index)}
-                                            className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-gray-700 rounded-full transition-all"
-                                            title="Update"
-                                        >
-                                            <Edit3 size={16} />
-                                        </button>
-                                    )}
-                                    {showDelete && onDelete && (
-                                        <button
-                                            onClick={() => onDelete(index)}
-                                            className="p-2 bg-white bg-opacity-90 hover:bg-opacity-100 text-red-600 rounded-full transition-all"
-                                            title="Delete"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* File Info */}
-                    <div className="p-3">
-                        <p className="text-sm font-medium text-gray-900 truncate" title={file.name}>
-                            {file.name}
-                        </p>
-                        <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-                    </div>
+                        </div>
+                    )}
                 </div>
-            ))}
+
+                {/* File Info */}
+                <div className="p-3">
+                    <p className="text-sm font-medium text-gray-900 truncate" title={file.name}>
+                        {file.name}
+                    </p>
+                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                </div>
+            </div>
         </div>
     );
 };
 
 export default FileView;
-
- export const FileViewSystemDemo = () => {
-    // Sample existing files (like from a property)
-    const [existingPropertyImages] = useState<FileItem[]>([
-        {
-            id: "1",
-            name: "property-front.jpg",
-            size: 2048000,
-            type: "image/jpeg",
-            url: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop"
-        },
-        {
-            id: "2",
-            name: "property-interior.jpg",
-            size: 1856000,
-            type: "image/jpeg",
-            url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop"
-        },
-        {
-            id: "3",
-            name: "floor-plan.pdf",
-            size: 524288,
-            type: "application/pdf",
-            url: "#"
-        }
-    ]);
-
-    const [newFiles, setNewFiles] = useState<File[] | null>(null);
-    const [documentFiles] = useState<FileItem[]>([
-        {
-            id: "doc1",
-            name: "contract.pdf",
-            size: 1024000,
-            type: "application/pdf",
-            url: "#"
-        },
-        {
-            id: "doc2",
-            name: "specifications.docx",
-            size: 512000,
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            url: "#"
-        }
-    ]);
-
-    const handleFileView = (index: number) => {
-        console.log("View file at index:", index);
-        // Implement view logic
-    };
-
-    const handleFileDelete = (index: number) => {
-        console.log("Delete file at index:", index);
-        // Implement delete logic
-    };
-
-    const handleFileUpdate = (index: number) => {
-        console.log("Update file at index:", index);
-        // Implement update logic
-    };
-
-    const handleFileDownload = (index: number) => {
-        console.log("Download file at index:", index);
-        // Implement download logic
-    };
-
-    return (
-        <div className="max-w-4xl mx-auto p-6 space-y-8">
-            <h1 className="text-2xl font-bold text-gray-800">File View System Demo</h1>
-
-            {/* Property Update Scenario */}
-            <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Property Update - Images</h2>
-                <p className="text-sm text-gray-600">
-                    Existing property images with option to add more during update
-                </p>
-
-                <FileUpload
-                    label="Property Images"
-                    description="Current images and upload new ones"
-                    existingFiles={existingPropertyImages}
-                    accept="image/*"
-                    multiple={true}
-                    onFileChange={setNewFiles}
-                    placeholder="Add more images"
-                />
-            </div>
-
-            {/* Standalone FileView - Grid Layout */}
-            <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Document Files - Grid View</h2>
-                <FileView
-                    files={documentFiles}
-                    layout="grid"
-                    onView={handleFileView}
-                    onDelete={handleFileDelete}
-                    onUpdate={handleFileUpdate}
-                    onDownload={handleFileDownload}
-                    showDownload={true}
-                />
-            </div>
-
-            {/* Standalone FileView - List Layout */}
-            <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Property Images - List View</h2>
-                <FileView
-                    files={existingPropertyImages}
-                    layout="list"
-                    onView={handleFileView}
-                    onDelete={handleFileDelete}
-                    onUpdate={handleFileUpdate}
-                    showUpdate={true}
-                    showDelete={true}
-                />
-            </div>
-
-            {/* FileView with limited actions */}
-            <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Read-Only Files</h2>
-                <p className="text-sm text-gray-600">Files with only view action enabled</p>
-                <FileView
-                    files={existingPropertyImages}
-                    layout="grid"
-                    onView={handleFileView}
-                    showDelete={false}
-                    showUpdate={false}
-                    showDownload={false}
-                />
-            </div>
-
-            {/* Empty state */}
-            <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Empty State</h2>
-                <FileView
-                    files={[]}
-                    onView={handleFileView}
-                    onDelete={handleFileDelete}
-                />
-            </div>
-        </div>
-    );
-}
