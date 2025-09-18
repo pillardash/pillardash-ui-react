@@ -56,30 +56,24 @@ export default function Select({
   const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
     "bottom",
   );
-  const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>([]);
+
+  // Handle both single and multi-select values
+  const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>(() => {
+    if (!value) return [];
+
+    if (multiple && Array.isArray(value)) {
+      return value
+        .map((val) => options.find((option) => option.value === val))
+        .filter(Boolean) as SelectOption[];
+    } else if (!multiple && typeof value === "string") {
+      const option = options.find((option) => option.value === value);
+      return option ? [option] : [];
+    }
+    return [];
+  });
 
   const selectRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Sync selectedOptions with value prop
-  useEffect(() => {
-    if (value === undefined || value === null) {
-      setSelectedOptions([]);
-      return;
-    }
-
-    if (multiple && Array.isArray(value)) {
-      const newSelectedOptions = value
-        .map((val) => options.find((option) => option.value === val))
-        .filter(Boolean) as SelectOption[];
-      setSelectedOptions(newSelectedOptions);
-    } else if (!multiple && typeof value === "string") {
-      const option = options.find((option) => option.value === value);
-      setSelectedOptions(option ? [option] : []);
-    } else {
-      setSelectedOptions([]);
-    }
-  }, [value, options, multiple]);
 
   // Calculate dropdown position
   useEffect(() => {
@@ -145,9 +139,8 @@ export default function Select({
       target: {
         id: id || "",
         value: eventValue,
-        name: name || "",
       },
-    } as React.ChangeEvent<HTMLSelectElement>);
+    } as any);
 
     if (!multiple || closeOnSelect) {
       setIsOpen(false);
@@ -170,9 +163,8 @@ export default function Select({
       target: {
         id: id || "",
         value: eventValue,
-        name: name || "",
       },
-    } as React.ChangeEvent<HTMLSelectElement>);
+    } as any);
   };
 
   // Close dropdown when clicking outside
@@ -192,6 +184,21 @@ export default function Select({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (multiple && Array.isArray(value)) {
+  //     setSelectedOptions(
+  //       value
+  //         .map((val) => options.find((option) => option.value === val))
+  //         .filter(Boolean) as SelectOption[],
+  //     );
+  //   } else if (!multiple && typeof value === "string") {
+  //     const option = options.find((option) => option.value === value);
+  //     setSelectedOptions(option ? [option] : []);
+  //   } else {
+  //     setSelectedOptions([]);
+  //   }
+  // }, [value, options, multiple]);
 
   // Size classes
   const sizeClasses = {
