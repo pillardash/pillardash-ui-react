@@ -88,6 +88,23 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     "December",
   ];
 
+  // Update internal state when value prop changes
+  useEffect(() => {
+    if (value.startDate) {
+      setSelectedStartDate(value.startDate);
+      setCurrentMonth(
+        new Date(value.startDate.getFullYear(), value.startDate.getMonth()),
+      );
+    }
+    if (value.endDate) {
+      setSelectedEndDate(value.endDate);
+    }
+
+    if (value.time) {
+      setSelectedTime(value.time);
+    }
+  }, [value]);
+
   // Handle clicking outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -146,6 +163,8 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         return "";
     }
   };
+
+  // useEffect(() => {}, [value]);
 
   const handleDateClick = (date: Date) => {
     if (mode === "daterange" || mode === "datetimerange") {
