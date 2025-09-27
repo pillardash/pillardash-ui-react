@@ -65,8 +65,9 @@ export default function Select({
       return value
         .map((val) => options.find((option) => option.value == val))
         .filter(Boolean) as SelectOption[];
-    } else if (!multiple && (typeof value == "string")) {
+    } else if (!multiple && typeof value == "string") {
       const option = options.find((option) => option.value == value);
+      console.log("options", option, "value", value);
       return option ? [option] : [];
     }
     return [];
