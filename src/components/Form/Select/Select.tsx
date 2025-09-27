@@ -65,7 +65,7 @@ export default function Select({
       return value
         .map((val) => options.find((option) => option.value == val))
         .filter(Boolean) as SelectOption[];
-    } else if (!multiple && typeof value == "string") {
+    } else if (!multiple) {
       const option = options.find((option) => option.value == value);
       return option ? [option] : [];
     }
@@ -84,7 +84,7 @@ export default function Select({
           .map((val) => options.find((option) => option.value == val))
           .filter(Boolean) as SelectOption[],
       );
-    } else if (!multiple && typeof value == "string") {
+    } else if (!multiple) {
       const option = options.find((option) => option.value == value);
       setSelectedOptions(option ? [option] : []);
     } else if (value === "" || value === null || value == undefined) {
