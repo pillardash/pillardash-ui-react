@@ -28,6 +28,7 @@ export type SelectProps = {
   maxSelected?: number;
   showSelectedCount?: boolean;
   closeOnSelect?: boolean;
+  showSelectAll?: boolean;
 };
 
 export default function Select({
@@ -49,13 +50,20 @@ export default function Select({
   multiple = false,
   maxSelected,
   showSelectedCount = false,
-  closeOnSelect = true,
+  closeOnSelect,
+  showSelectAll = true,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">(
     "bottom",
   );
+
+  // Determine default closeOnSelect behavior
+  // Single select: close by default (true)
+  // Multiple select: stay open by default (false)
+  const shouldCloseOnSelect =
+    closeOnSelect !== undefined ? closeOnSelect : !multiple;
 
   // Handle both single and multi-select values
   const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>(() => {
@@ -157,12 +165,72 @@ export default function Select({
         id: id || "",
         value: eventValue,
       },
-    } as any);
+    } as React.ChangeEvent<HTMLSelectElement>);
 
-    if (!multiple || closeOnSelect) {
+    // Close dropdown based on shouldCloseOnSelect
+    if (shouldCloseOnSelect) {
       setIsOpen(false);
       setSearchTerm("");
     }
+  };
+
+  const handleSelectAll = () => {
+    if (!multiple) return;
+
+    const selectableOptions = filteredOptions.filter((opt) => !opt.disabled);
+    const allSelected = selectableOptions.every((option) =>
+      selectedOptions.some((selected) => selected.value === option.value),
+    );
+
+    let newSelectedOptions: SelectOption[];
+
+    if (allSelected) {
+      // Deselect all filtered options
+      newSelectedOptions = selectedOptions.filter(
+        (selected) =>
+          !selectableOptions.some((option) => option.value === selected.value),
+      );
+    } else {
+      // Select all filtered options (respecting maxSelected limit)
+      const optionsToAdd = selectableOptions.filter(
+        (option) =>
+          !selectedOptions.some((selected) => selected.value === option.value),
+      );
+
+      if (maxSelected !== undefined) {
+        const remainingSlots = maxSelected - selectedOptions.length;
+        newSelectedOptions = [
+          ...selectedOptions,
+          ...optionsToAdd.slice(0, remainingSlots),
+        ];
+      } else {
+        newSelectedOptions = [...selectedOptions, ...optionsToAdd];
+      }
+    }
+
+    setSelectedOptions(newSelectedOptions);
+
+    const eventValue = newSelectedOptions.map((opt) => opt.value);
+
+    onChange({
+      target: {
+        id: id || "",
+        value: eventValue,
+      },
+    } as unknown as React.ChangeEvent<HTMLSelectElement>);
+  };
+
+  const handleClearAll = () => {
+    if (!multiple) return;
+
+    setSelectedOptions([]);
+
+    onChange({
+      target: {
+        id: id || "",
+        value: [],
+      },
+    } as unknown as React.ChangeEvent<HTMLSelectElement>);
   };
 
   const removeOption = (optionToRemove: SelectOption, e: React.MouseEvent) => {
@@ -181,7 +249,7 @@ export default function Select({
         id: id || "",
         value: eventValue,
       },
-    } as any);
+    } as React.ChangeEvent<HTMLSelectElement>);
   };
 
   // Close dropdown when clicking outside
@@ -229,6 +297,27 @@ export default function Select({
 
   const isOptionSelected = (option: SelectOption) => {
     return selectedOptions.some((selected) => selected.value === option.value);
+  };
+
+  const areAllFilteredSelected = () => {
+    if (!multiple || filteredOptions.length === 0) return false;
+    const selectableOptions = filteredOptions.filter((opt) => !opt.disabled);
+    return (
+      selectableOptions.length > 0 &&
+      selectableOptions.every((option) =>
+        selectedOptions.some((selected) => selected.value === option.value),
+      )
+    );
+  };
+
+  const areSomeFilteredSelected = () => {
+    if (!multiple || filteredOptions.length === 0) return false;
+    const selectableOptions = filteredOptions.filter((opt) => !opt.disabled);
+    return (
+      selectableOptions.some((option) =>
+        selectedOptions.some((selected) => selected.value === option.value),
+      ) && !areAllFilteredSelected()
+    );
   };
 
   // Dropdown positioning classes
@@ -330,17 +419,41 @@ export default function Select({
             <div className="max-h-60 overflow-auto py-1">
               {filteredOptions.length > 0 ? (
                 <>
-                  {multiple && selectedOptions.length > 0 && (
-                    <div className="px-3 py-2 text-xs text-gray-500 border-b border-gray-100">
-                      {selectedOptions.length} selected
-                      {maxSelected && ` of ${maxSelected} max`}
+                  {multiple && showSelectAll && (
+                    <div className="border-b border-gray-100">
+                      <div className="px-3 py-2 flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={handleSelectAll}
+                          className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                        >
+                          {areAllFilteredSelected()
+                            ? "Deselect All"
+                            : "Select All"}
+                        </button>
+                        {selectedOptions.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearAll}
+                            className="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                          >
+                            Clear All
+                          </button>
+                        )}
+                      </div>
+                      {selectedOptions.length > 0 && (
+                        <div className="px-3 pb-2 text-xs text-gray-500">
+                          {selectedOptions.length} selected
+                          {maxSelected && ` of ${maxSelected} max`}
+                        </div>
+                      )}
                     </div>
                   )}
                   {filteredOptions.map((option) => {
                     const isSelected = isOptionSelected(option);
                     const isDisabled =
                       option.disabled ||
-                      (maxSelected &&
+                      (maxSelected !== undefined &&
                         !isSelected &&
                         selectedOptions.length >= maxSelected);
 
@@ -359,7 +472,7 @@ export default function Select({
                         onClick={() => !isDisabled && handleSelect(option)}
                         role="option"
                         aria-selected={isSelected}
-                        aria-disabled={isDisabled as boolean}
+                        aria-disabled={isDisabled}
                       >
                         <span className="flex-1 text-sm font-medium">
                           {option.label || option.value}
