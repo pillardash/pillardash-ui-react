@@ -13,14 +13,6 @@ interface ExpandableTableProps<T> extends TableProps<T> {
   onRowToggle?: (item: T, isExpanded: boolean) => void;
   defaultExpandedRows?: Set<string | number>;
   getRowKey?: (item: T, index: number) => string | number;
-  paginationMeta?: {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    from: number;
-    to: number;
-  };
 }
 
 export default function Table<T>({
@@ -41,17 +33,12 @@ export default function Table<T>({
   onRowToggle,
   defaultExpandedRows = new Set(),
   getRowKey = (item: T, index: number) => index,
-  paginationMeta,
 }: ExpandableTableProps<T>) {
   const [expandedRows, setExpandedRows] =
     useState<Set<string | number>>(defaultExpandedRows);
 
-  // Use Laravel pagination meta if available, otherwise fallback to props
-  const totalItemsCount = paginationMeta?.total || totalItems || data.length;
-  const totalPages =
-    paginationMeta?.last_page || Math.ceil(totalItemsCount / itemsPerPage);
-  const currentPageNumber = paginationMeta?.current_page || currentPage;
-  const perPage = paginationMeta?.per_page || itemsPerPage;
+  const totalItemsCount = totalItems || data.length;
+  const totalPages = Math.ceil(totalItemsCount / itemsPerPage);
   const currentItems = showPagination ? data : data;
 
   const handleRowClick = (item: T, index: number) => {
@@ -92,7 +79,7 @@ export default function Table<T>({
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {loading &&
         // Card skeleton for loading state
-        Array.from({ length: perPage }).map((_, index) => (
+        Array.from({ length: itemsPerPage }).map((_, index) => (
           <div
             key={index}
             className="bg-white rounded-lg border border-gray-200 p-4 animate-pulse"
@@ -210,7 +197,7 @@ export default function Table<T>({
           {loading && (
             <TableSkeleton
               columns={columns.length + (expandableRows ? 1 : 0)}
-              rows={perPage}
+              rows={itemsPerPage}
             />
           )}
           {currentItems.length > 0
@@ -294,14 +281,13 @@ export default function Table<T>({
 
       {showPagination && (
         <Pagination
-          currentPage={currentPageNumber}
+          currentPage={currentPage}
           totalPages={totalPages}
           totalItems={totalItemsCount}
-          itemsPerPage={perPage}
+          itemsPerPage={itemsPerPage}
           onPageChange={onPageChange}
           onViewChange={onViewChange}
           loading={loading}
-          paginationMeta={paginationMeta}
         />
       )}
     </>
