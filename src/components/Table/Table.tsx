@@ -301,7 +301,6 @@ export default function Table<T>({
           onPageChange={onPageChange}
           onViewChange={onViewChange}
           loading={loading}
-          paginationMeta={paginationMeta}
         />
       )}
     </>
