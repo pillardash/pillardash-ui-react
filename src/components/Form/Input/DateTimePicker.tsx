@@ -211,7 +211,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
             startDate: selectedStartDate!,
             endDate:
               selectedDate < selectedStartDate!
-                ? selectedStartDate
+                ? selectedStartDate || undefined
                 : selectedDate,
             ...(mode === "datetimerange" && { time: selectedTime }),
           };
