@@ -1,101 +1,163 @@
 import React, { useState } from "react";
-
 import { Check, ChevronDown } from "lucide-react";
 
 export type SelectButtonOption = {
-    value: string;
-    label?: string;
+  value: string;
+  label?: string;
 };
 
 export type SelectButtonProps = {
-    options: SelectButtonOption[];
-    placeholder?: string;
-    onChange: (value: string) => void;
-    value?: string;
-    size?: "sm" | "md";
-    className?: string;
-    name?: string;
-    id?: string;
-    disabled?: boolean;
-    label?: string;
-    required?: boolean;
+  options: SelectButtonOption[];
+  placeholder?: string;
+  onChange: (value: string) => void;
+  value?: string;
+  size?: "sm" | "md";
+  className?: string;
+  name?: string;
+  id?: string;
+  disabled?: boolean;
+  label?: string;
+  required?: boolean;
 };
 
 export default function SelectButton({
-    options,
-    placeholder = "Select an option",
-    onChange,
-    value,
-    size = "md",
-    className = "",
-    name,
-    id,
-    disabled = false,
-    label,
-    required,
+  options,
+  placeholder = "Select an option",
+  onChange,
+  value,
+  size = "md",
+  className = "",
+  name,
+  id,
+  disabled = false,
+  label,
+  required,
 }: SelectButtonProps) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedOption, setSelectedOption] = useState<SelectButtonOption | null>(
-        value ? options.find((option) => option.value === value) || null : null
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] =
+    useState<SelectButtonOption | null>(
+      value ? options.find((option) => option.value === value) || null : null,
     );
 
-    const handleSelect = (option: SelectButtonOption) => {
-        setSelectedOption(option);
-        onChange(option.value);
-        setIsOpen(false);
-    };
+  const handleSelect = (option: SelectButtonOption) => {
+    setSelectedOption(option);
+    onChange(option.value);
+    setIsOpen(false);
+  };
 
-    // Size classes for the button
-    const sizeClasses = {
-        sm: "px-3 py-2 text-sm",
-        md: "px-4 py-2.5 text-base",
-    };
+  // Size classes for the button
+  const sizeClasses = {
+    sm: "px-3 py-2 text-sm",
+    md: "px-4 py-2.5 text-base",
+  };
 
-    return (
-        <div className={`relative inline-block`}>
-            {label && (
-                <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-700'>
-                    {label}
-                    {required && <span className='ml-1 text-red-500'>*</span>}
-                </label>
-            )}
-
-            <button
-                type='button'
-                className={`flex w-full items-center justify-between rounded-md border border-gray-200 bg-white shadow-sm ${
-                    sizeClasses[size]
-                } text-gray-700 hover:bg-gray-50 focus:outline-none ${disabled ? "cursor-not-allowed opacity-50" : ""} ${className}`}
-                onClick={() => !disabled && setIsOpen(!isOpen)}
-                disabled={disabled}
-                id={id}
+  return (
+    <div className={`relative ${className}`}>
+      {label && (
+        <label
+          htmlFor={id}
+          className="mb-1 block text-sm font-medium text-gray-700"
+        >
+          {label}
+          {required && <span className="ml-1 text-red-500">*</span>}
+        </label>
+      )}
+      <button
+        type="button"
+        className={`flex w-full items-center justify-between rounded-md border border-gray-200 bg-white shadow-sm ${
+          sizeClasses[size]
+        } text-gray-700 hover:bg-gray-50 focus:outline-none ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        id={id}
+      >
+        <span className="truncate">
+          {selectedOption
+            ? selectedOption?.label || selectedOption.value
+            : placeholder}
+        </span>
+        <ChevronDown
+          className={`ml-2 h-4 w-4 ${isOpen ? "rotate-180 transform" : ""}`}
+        />
+      </button>
+      {isOpen && (
+        <div className="absolute z-10 mt-1 max-h-60 w-full min-w-[200px] p-1 font-medium text-sm overflow-auto rounded-lg bg-white shadow-xl">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              className={`cursor-pointer px-3 py-2 hover:bg-gray-100 rounded-lg flex justify-between item-center ${
+                selectedOption?.value === option.value
+                  ? "bg-gray-50 text-black"
+                  : "text-gray-900"
+              }`}
+              onClick={() => handleSelect(option)}
             >
-                <span className='truncate'>
-                    {selectedOption ? selectedOption?.label || selectedOption.value : placeholder}
-                </span>
-                <ChevronDown className={`ml-2 h-4 w-4 ${isOpen ? "rotate-180 transform" : ""}`} />
-            </button>
-
-            {isOpen && (
-                <div className='absolute z-10 mt-1 max-h-60 w-full min-w-[200px] p-1 font-medium text-sm overflow-auto rounded-lg bg-white shadow-xl'>
-                    {options.map((option) => (
-                        <div
-                            key={option.value}
-                            className={`cursor-pointer px-3 py-2 hover:bg-gray-100 rounded-lg flex justify-between item-center ${
-                                selectedOption?.value === option.value
-                                    ? "bg-gray-50 text-black"
-                                    : "text-gray-900"
-                            }`}
-                            onClick={() => handleSelect(option)}
-                        >
-
-                            <div>{option.label || option.value}</div>
-                            { selectedOption?.value === option.value && <div><Check size={15} className="text-primary" /></div> }
-                        </div>
-                    ))}
+              <div>{option.label || option.value}</div>
+              {selectedOption?.value === option.value && (
+                <div>
+                  <Check size={15} className="text-blue-600" />
                 </div>
-            )}
-
-            {name && <input type='hidden' name={name} value={selectedOption?.value || ""} />}
+              )}
+            </div>
+          ))}
         </div>
-    );
+      )}
+      {name && (
+        <input type="hidden" name={name} value={selectedOption?.value || ""} />
+      )}
+    </div>
+  );
 }
+
+// Demo
+function Demo() {
+  const [value1, setValue1] = useState("");
+  const [value2, setValue2] = useState("");
+  const [value3, setValue3] = useState("");
+
+  const options = [
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
+  ];
+
+  return (
+    <div className="p-8 space-y-6">
+      <h1 className="text-2xl font-bold mb-6">Resizable Select Button</h1>
+
+      <div>
+        <p className="mb-2 text-sm text-gray-600">Default (no width class):</p>
+        <SelectButton
+          options={options}
+          onChange={setValue1}
+          value={value1}
+          placeholder="Select..."
+        />
+      </div>
+
+      <div>
+        <p className="mb-2 text-sm text-gray-600">With w-64 class:</p>
+        <SelectButton
+          options={options}
+          onChange={setValue2}
+          value={value2}
+          placeholder="Select..."
+          className="w-64"
+        />
+      </div>
+
+      <div>
+        <p className="mb-2 text-sm text-gray-600">With w-96 class:</p>
+        <SelectButton
+          options={options}
+          onChange={setValue3}
+          value={value3}
+          placeholder="Select..."
+          className="w-96"
+        />
+      </div>
+    </div>
+  );
+}
+
+export { Demo as default };
