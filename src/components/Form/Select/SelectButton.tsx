@@ -159,5 +159,3 @@ function Demo() {
     </div>
   );
 }
-
-export { Demo as default };
