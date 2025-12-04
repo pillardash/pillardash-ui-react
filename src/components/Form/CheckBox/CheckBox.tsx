@@ -38,7 +38,7 @@ export type RadioGroupProps = {
 
 const CheckBox = ({
   variant = "check",
-  size = "sm",
+  size = "md",
   checked = false,
   disabled = false,
   onChange,
@@ -78,13 +78,13 @@ const CheckBox = ({
   const sizeClasses = {
     sm: {
       container: "h-4 w-4",
-      toggle: "w-8 h-4",
+      toggle: "w-7 h-4",
       toggleCircle: "h-3 w-3",
       text: "text-sm",
     },
     md: {
       container: "h-5 w-5",
-      toggle: "w-10 h-5",
+      toggle: "w-9 h-5",
       toggleCircle: "h-4 w-4",
       text: "text-base",
     },
@@ -188,7 +188,7 @@ const CheckBox = ({
   };
 
   return (
-    <>
+    <div>
       <div className={`flex items-start gap-2 ${className}`}>
         {label && labelPosition === "left" && (
           <label
@@ -248,7 +248,7 @@ const CheckBox = ({
       {helperText && !error && (
         <p className="mt-1 text-xs text-gray-500">{helperText}</p>
       )}
-    </>
+    </div>
   );
 };
 
