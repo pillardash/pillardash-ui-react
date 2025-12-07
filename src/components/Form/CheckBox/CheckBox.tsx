@@ -13,7 +13,7 @@ export type CheckBoxProps = {
   id?: string;
   className?: string;
   error?: string;
-  helperText?: string;
+  helpText?: string;
   required?: boolean;
   indeterminate?: boolean; // For partially checked state
 };
@@ -30,7 +30,7 @@ export type RadioGroupProps = {
   size?: "sm" | "md" | "lg";
   className?: string;
   error?: string;
-  helperText?: string;
+  helpText?: string;
   required?: boolean;
   label?: string;
   direction?: "horizontal" | "vertical";
@@ -49,7 +49,7 @@ const CheckBox = ({
   id,
   className = "",
   error,
-  helperText,
+  helpText,
   required = false,
   indeterminate = false,
 }: CheckBoxProps) => {
@@ -245,8 +245,8 @@ const CheckBox = ({
         )}
       </div>
       {/* Helper text */}
-      {helperText && !error && (
-        <p className="mt-1 text-xs text-gray-500">{helperText}</p>
+      {helpText && !error && (
+        <p className="mt-1 text-xs text-gray-500">{helpText}</p>
       )}
     </div>
   );
@@ -261,7 +261,7 @@ const RadioGroup = ({
   size = "md",
   className = "",
   error,
-  helperText,
+  helpText,
   required = false,
   label,
   direction = "vertical",
@@ -314,8 +314,8 @@ const RadioGroup = ({
       )}
 
       {/* Helper text */}
-      {helperText && !error && (
-        <p className="text-xs text-gray-500">{helperText}</p>
+      {helpText && !error && (
+        <p className="text-xs text-gray-500">{helpText}</p>
       )}
     </div>
   );
@@ -368,7 +368,7 @@ function CheckBoxDemo() {
                     disabled: true,
                   },
                 ]}
-                helperText="Select one option from the list"
+                helpText="Select one option from the list"
               />
             </div>
 
@@ -407,7 +407,7 @@ function CheckBoxDemo() {
                     setFormData({ ...formData, newsletter: checked })
                   }
                   label="Subscribe to newsletter"
-                  helperText="Get updates about new features and releases"
+                  helpText="Get updates about new features and releases"
                 />
 
                 <CheckBox
