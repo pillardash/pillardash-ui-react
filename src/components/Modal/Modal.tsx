@@ -204,9 +204,7 @@ const Modal: React.FC<ModalProps> = ({
           )}
 
           {/* Content */}
-          <div
-            className={`flex-1 min-h-0 overflow-y-auto ${maxHeight || size === "full" ? "overflow-y-auto" : ""} ${contentClassName}`}
-          >
+          <div className={`flex-1 min-h-0 overflow-y-auto ${contentClassName}`}>
             {(maxHeight && (position === "left" || position === "right")) ||
             size === "full" ? (
               <div className="p-6 min-h-0 flex-1">{children}</div>
