@@ -12,7 +12,7 @@ export interface ButtonProps {
   type?: "button" | "submit" | "reset";
 
   /** Size of the button */
-  size?: "small" | "medium" | "large" | "sm" | "md" | "lg";
+  size?: "small" | "medium" | "large" | "sm" | "md" | "lg" | "xs";
 
   /** Visual style variant */
   variant?: "primary" | "secondary" | "dark" | "neutral" | "danger" | "default";
@@ -54,6 +54,7 @@ const Button: FC<ButtonProps> = ({
   const sizeClasses = {
     small: "px-5 py-2 text-sm",
     sm: "px-5 py-2 text-sm",
+    xs: "px-3 py-1 text-sm",
     medium: "px-6 py-3 text-md",
     md: "px-6 py-3 text-md",
     large: "px-8 py-4 text-lg",
@@ -86,7 +87,7 @@ const Button: FC<ButtonProps> = ({
     },
     danger: {
       solid:
-        "bg-red-600 text-white-700 hover:bg-red-200 hover:text-white border border-red-300",
+        "bg-red-600 text-white hover:bg-red-200 hover:text-white border border-red-300",
       outline:
         "bg-transparent text-red-600 hover:bg-red-200 border border-red-300",
     },

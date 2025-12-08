@@ -5,7 +5,9 @@ export type CheckBoxProps = {
   size?: "sm" | "md" | "lg";
   checked?: boolean;
   disabled?: boolean;
-  onChange?: ((checked: boolean) => void) | ((e: any) => void);
+  onChange?:
+    | ((checked: boolean) => void)
+    | ((e: React.ChangeEvent<HTMLInputElement>) => void);
   label?: string | ReactNode;
   labelPosition?: "left" | "right";
   name?: string;
@@ -72,16 +74,14 @@ const CheckBox = ({
     setIsIndeterminate(false);
 
     // Support both callback patterns
-    // if (onChange) {
-    //   // Try calling with event first, if it fails (expecting boolean), call with boolean
-    //   try {
-    //     (onChange as (e: React.ChangeEvent<HTMLInputElement>) => void)(e);
-    //   } catch {
-    //     (onChange as (checked: boolean) => void)(newValue);
-    //   }
-    // }
-
-    onChange?.(e as any);
+    if (onChange) {
+      // Try calling with event first, if it fails (expecting boolean), call with boolean
+      try {
+        (onChange as (e: React.ChangeEvent<HTMLInputElement>) => void)(e);
+      } catch {
+        (onChange as (checked: boolean) => void)(newValue);
+      }
+    }
   };
 
   // Size classes
@@ -430,7 +430,7 @@ function CheckBoxDemo() {
                 <CheckBox
                   variant="toggle"
                   checked={formData.newsletter}
-                  onChange={(checked) =>
+                  onChange={(checked: boolean) =>
                     setFormData({ ...formData, newsletter: checked })
                   }
                   label="Subscribe to newsletter (using boolean value)"
@@ -451,7 +451,7 @@ function CheckBoxDemo() {
                 <CheckBox
                   variant="check"
                   checked={formData.mandatory}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setFormData({ ...formData, mandatory: e.target.checked })
                   }
                   label="Mandatory Fee (using event)"
