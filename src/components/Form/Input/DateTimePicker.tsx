@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface DateTimeValue {
   startDate?: Date;
@@ -23,7 +24,7 @@ export interface DateTimePickerProps {
   maxDate?: Date;
   format?: string;
   showWeekNumbers?: boolean;
-  firstDayOfWeek?: 0 | 1; // 0 = Sunday, 1 = Monday
+  firstDayOfWeek?: 0 | 1;
 }
 
 const DateTimePicker: React.FC<DateTimePickerProps> = ({
@@ -54,11 +55,10 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     value.endDate || null,
   );
   const [selectedTime, setSelectedTime] = useState(value.time || "12:00 PM");
-  const [isEditingYear, setIsEditingYear] = useState(false);
-  const [yearInput, setYearInput] = useState(
-    currentMonth.getFullYear().toString(),
-  );
   const [isSelectingEnd, setIsSelectingEnd] = useState(false);
+  const [showYearMonthPicker, setShowYearMonthPicker] = useState(false);
+  const [tempYear, setTempYear] = useState(currentMonth.getFullYear());
+  const [tempMonth, setTempMonth] = useState(currentMonth.getMonth());
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
 
@@ -88,7 +88,21 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     "December",
   ];
 
-  // Update internal state when value prop changes
+  const monthsShort = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
   useEffect(() => {
     if (value.startDate) {
       setSelectedStartDate(value.startDate);
@@ -99,13 +113,11 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     if (value.endDate) {
       setSelectedEndDate(value.endDate);
     }
-
     if (value.time) {
       setSelectedTime(value.time);
     }
   }, [value]);
 
-  // Handle clicking outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -115,6 +127,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         !inputRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        setShowYearMonthPicker(false);
       }
     };
 
@@ -164,9 +177,17 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     }
   };
 
-  // useEffect(() => {}, [value]);
-
   const handleDateClick = (date: Date) => {
+    // Create date at noon to avoid timezone issues
+    const selectedDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      12,
+      0,
+      0,
+    );
+
     if (mode === "daterange" || mode === "datetimerange") {
       if (
         !selectedStartDate ||
@@ -174,31 +195,33 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         isSelectingEnd
       ) {
         if (!isSelectingEnd) {
-          setSelectedStartDate(date);
+          setSelectedStartDate(selectedDate);
           setSelectedEndDate(null);
           setIsSelectingEnd(true);
         } else {
-          if (date < selectedStartDate!) {
-            setSelectedStartDate(date);
+          if (selectedDate < selectedStartDate!) {
+            setSelectedStartDate(selectedDate);
             setSelectedEndDate(selectedStartDate);
           } else {
-            setSelectedEndDate(date);
+            setSelectedEndDate(selectedDate);
           }
           setIsSelectingEnd(false);
 
           const newValue: DateTimeValue = {
             startDate: selectedStartDate!,
-            // @ts-ignore
-            endDate: date < selectedStartDate! ? selectedStartDate : date,
+            endDate:
+              selectedDate < selectedStartDate!
+                ? selectedStartDate || undefined
+                : selectedDate,
             ...(mode === "datetimerange" && { time: selectedTime }),
           };
           onChange?.(newValue);
         }
       }
     } else {
-      setSelectedStartDate(date);
+      setSelectedStartDate(selectedDate);
       const newValue: DateTimeValue = {
-        startDate: date,
+        startDate: selectedDate,
         ...(mode === "datetime" && { time: selectedTime }),
       };
       onChange?.(newValue);
@@ -220,7 +243,22 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
   const isDateInRange = (date: Date) => {
     if (!selectedStartDate || !selectedEndDate) return false;
-    return date >= selectedStartDate && date <= selectedEndDate;
+    const checkDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+    );
+    const start = new Date(
+      selectedStartDate.getFullYear(),
+      selectedStartDate.getMonth(),
+      selectedStartDate.getDate(),
+    );
+    const end = new Date(
+      selectedEndDate.getFullYear(),
+      selectedEndDate.getMonth(),
+      selectedEndDate.getDate(),
+    );
+    return checkDate >= start && checkDate <= end;
   };
 
   const isDateSelected = (date: Date) => {
@@ -230,7 +268,11 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
   };
 
   const isSameDay = (date1: Date, date2: Date) => {
-    return date1.toDateString() === date2.toDateString();
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
   };
 
   const getDaysInMonth = () => {
@@ -240,7 +282,6 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
 
-    // Calculate first day of week for the month
     let startDay = firstDay.getDay();
     if (firstDayOfWeek === 1) {
       startDay = startDay === 0 ? 6 : startDay - 1;
@@ -248,19 +289,16 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
     const days = [];
 
-    // Previous month's trailing days
     for (let i = 0; i < startDay; i++) {
       const prevDate = new Date(year, month, -(startDay - 1 - i));
       days.push({ date: prevDate, isCurrentMonth: false });
     }
 
-    // Current month's days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push({ date: new Date(year, month, i), isCurrentMonth: true });
     }
 
-    // Next month's leading days
-    const remainingDays = 42 - days.length; // 6 rows × 7 days
+    const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
       days.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
     }
@@ -278,16 +316,6 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     );
   };
 
-  const navigateYear = (direction: number) => {
-    setCurrentMonth(
-      new Date(
-        currentMonth.getFullYear() + direction,
-        currentMonth.getMonth(),
-        1,
-      ),
-    );
-  };
-
   const generateTimeOptions = () => {
     const times = [];
     for (let hour = 1; hour <= 12; hour++) {
@@ -300,31 +328,18 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     return times;
   };
 
-  const handleYearEdit = (newYear: string) => {
-    const year = parseInt(newYear);
-    if (!isNaN(year) && year >= 1900 && year <= 2100) {
-      setCurrentMonth(new Date(year, currentMonth.getMonth(), 1));
+  const generateYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let i = currentYear - 100; i <= currentYear + 10; i++) {
+      years.push(i);
     }
-    setYearInput(newYear);
+    return years;
   };
 
-  const handleYearSubmit = () => {
-    const year = parseInt(yearInput);
-    if (!isNaN(year) && year >= 1900 && year <= 2100) {
-      setCurrentMonth(new Date(year, currentMonth.getMonth(), 1));
-    } else {
-      setYearInput(currentMonth.getFullYear().toString());
-    }
-    setIsEditingYear(false);
-  };
-
-  const handleYearKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleYearSubmit();
-    } else if (e.key === "Escape") {
-      setYearInput(currentMonth.getFullYear().toString());
-      setIsEditingYear(false);
-    }
+  const handleYearMonthSelect = () => {
+    setCurrentMonth(new Date(tempYear, tempMonth, 1));
+    setShowYearMonthPicker(false);
   };
 
   return (
@@ -372,219 +387,233 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         </div>
 
         {isOpen && !disabled && (
+          // <div
+          //   ref={dropdownRef}
+          //   className="absolute z-[1000] mt-1 bg-white border border-gray-200 rounded-[12px] shadow-lg backdrop-blur-sm bg-white/95 p-4 min-w-[320px]"
+          // >
           <div
             ref={dropdownRef}
-            className="absolute z-[1000] mt-1 bg-white border border-gray-200 rounded-[12px] shadow-lg backdrop-blur-sm bg-white/95 p-4 min-w-[320px]"
+            className="absolute z-[1000] mt-1 bg-white border border-gray-200 rounded-[12px] shadow-lg backdrop-blur-sm bg-white/95 p-4 min-w-[320px] max-h-[600px] overflow-y-auto"
+            style={{
+              top: inputRef.current
+                ? inputRef.current.getBoundingClientRect().bottom + 4
+                : 0,
+              left: inputRef.current
+                ? inputRef.current.getBoundingClientRect().left
+                : 0,
+            }}
           >
-            {/* Month/Year Navigation */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-1">
-                <button
-                  type="button"
-                  onClick={() => navigateMonth(-1)}
-                  className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            {!showYearMonthPicker ? (
+              <>
+                {/* Month/Year Navigation */}
+                <div className="flex items-center justify-between mb-4">
+                  <button
+                    type="button"
+                    onClick={() => navigateMonth(-1)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-              </div>
+                    <ChevronLeft className="w-5 h-5 text-gray-600" />
+                  </button>
 
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">
-                  {months[currentMonth.getMonth()]}
-                </span>
-                <div className="flex items-center space-x-1">
-                  {isEditingYear ? (
-                    <input
-                      type="text"
-                      value={yearInput}
-                      onChange={(e) => setYearInput(e.target.value)}
-                      onBlur={handleYearSubmit}
-                      onKeyDown={handleYearKeyDown}
-                      className="w-16 text-center font-medium text-gray-900 bg-gray-50 border border-gray-200 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
-                      autoFocus
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsEditingYear(true);
-                        setYearInput(currentMonth.getFullYear().toString());
-                      }}
-                      className="font-medium text-gray-900 hover:text-primary-600 transition-colors px-1"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowYearMonthPicker(true);
+                      setTempYear(currentMonth.getFullYear());
+                      setTempMonth(currentMonth.getMonth());
+                    }}
+                    className="px-4 py-2 font-semibold text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    {months[currentMonth.getMonth()]}{" "}
+                    {currentMonth.getFullYear()}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => navigateMonth(1)}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+
+                {/* Week Days Header */}
+                <div className="grid grid-cols-7 gap-1 mb-2">
+                  {weekDays.map((day) => (
+                    <div
+                      key={day}
+                      className="text-center text-xs font-semibold text-gray-600 py-2"
                     >
-                      {currentMonth.getFullYear()}
-                    </button>
-                  )}
-                  <div className="flex flex-col">
-                    <button
-                      type="button"
-                      onClick={() => navigateYear(1)}
-                      className="p-0.5 hover:bg-gray-100 rounded transition-colors"
-                    >
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      {day}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 gap-1 mb-4">
+                  {getDaysInMonth().map((dayObj, index) => {
+                    const { date, isCurrentMonth } = dayObj;
+                    const isSelected = isDateSelected(date);
+                    const isInRange = isDateInRange(date);
+                    const isToday = isSameDay(date, new Date());
+                    const isStartDate =
+                      selectedStartDate && isSameDay(date, selectedStartDate);
+                    const isEndDate =
+                      selectedEndDate && isSameDay(date, selectedEndDate);
+
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleDateClick(date)}
+                        disabled={!isCurrentMonth}
+                        className={`
+                          w-9 h-9 text-sm transition-all duration-200 relative flex items-center justify-center font-medium
+                          ${isCurrentMonth ? "text-gray-900" : "text-gray-300 cursor-not-allowed"}
+                          ${
+                            isSelected
+                              ? "bg-primary-500 text-white font-semibold rounded-full shadow-md"
+                              : isInRange
+                                ? "bg-primary-100 text-primary-700"
+                                : "hover:bg-gray-100 rounded-lg"
+                          }
+                          ${isToday && !isSelected ? "ring-2 ring-primary-400" : ""}
+                          ${isStartDate || isEndDate ? "rounded-full" : ""}
+                          ${!isCurrentMonth ? "opacity-40" : ""}
+                        `}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 15l7-7 7 7"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigateYear(-1)}
-                      className="p-0.5 hover:bg-gray-100 rounded transition-colors"
+                        {date.getDate()}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Time Picker */}
+                {(mode === "datetime" || mode === "datetimerange") && (
+                  <div className="border-t border-gray-100 pt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Time
+                    </label>
+                    <select
+                      value={selectedTime}
+                      onChange={(e) => handleTimeChange(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
                     >
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      {generateTimeOptions().map((time) => (
+                        <option key={time} value={time}>
+                          {time}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOpen(false);
+                      setSelectedStartDate(null);
+                      setSelectedEndDate(null);
+                      setIsSelectingEnd(false);
+                      onChange?.({});
+                    }}
+                    className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
+                  >
+                    Done
+                  </button>
+                </div>
+              </>
+            ) : (
+              /* Year & Month Picker */
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    Select Month & Year
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowYearMonthPicker(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Year Selector */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-2">
+                    Year
+                  </label>
+                  <select
+                    value={tempYear}
+                    onChange={(e) => setTempYear(parseInt(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white font-medium"
+                  >
+                    {generateYears().map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Month Grid */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-2">
+                    Month
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {monthsShort.map((month, index) => (
+                      <button
+                        key={month}
+                        type="button"
+                        onClick={() => setTempMonth(index)}
+                        className={`
+                          px-3 py-2 text-sm font-medium rounded-lg transition-colors
+                          ${
+                            tempMonth === index
+                              ? "bg-primary-500 text-white"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }
+                        `}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
+                        {month}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center space-x-1">
+                {/* Confirm Button */}
                 <button
                   type="button"
-                  onClick={() => navigateMonth(1)}
-                  className="p-1 hover:bg-gray-100 rounded-md transition-colors"
+                  onClick={handleYearMonthSelect}
+                  className="w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
+                  Apply
                 </button>
               </div>
-            </div>
-
-            {/* Week Days Header */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {weekDays.map((day) => (
-                <div
-                  key={day}
-                  className="text-center text-xs font-medium text-gray-500 py-2"
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1 mb-4">
-              {getDaysInMonth().map((dayObj, index) => {
-                const { date, isCurrentMonth } = dayObj;
-                const isSelected = isDateSelected(date);
-                const isInRange = isDateInRange(date);
-                const isToday = isSameDay(date, new Date());
-                const isStartDate =
-                  selectedStartDate && isSameDay(date, selectedStartDate);
-                const isEndDate =
-                  selectedEndDate && isSameDay(date, selectedEndDate);
-
-                return (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleDateClick(date)}
-                    className={`
-                                            w-8 h-8 text-sm transition-all duration-200 relative flex items-center justify-center
-                                            ${isCurrentMonth ? "text-gray-900" : "text-gray-300"}
-                                            ${
-                                              isSelected
-                                                ? "bg-primary-500 text-white font-medium rounded-full"
-                                                : isInRange
-                                                  ? "bg-primary-100 text-primary-700 rounded-sm"
-                                                  : "hover:bg-gray-100 rounded-md"
-                                            }
-                                            ${isToday && !isSelected ? "ring-2 ring-primary-500 ring-opacity-30" : ""}
-                                            ${isStartDate || isEndDate ? "rounded-full" : ""}
-                                        `}
-                  >
-                    {date.getDate()}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Time Picker */}
-            {(mode === "datetime" || mode === "datetimerange") && (
-              <div className="border-t border-gray-100 pt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Time
-                </label>
-                <select
-                  value={selectedTime}
-                  onChange={(e) => handleTimeChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500 bg-white"
-                >
-                  {generateTimeOptions().map((time) => (
-                    <option key={time} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </div>
             )}
-
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-100">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  setSelectedStartDate(null);
-                  setSelectedEndDate(null);
-                  setIsSelectingEnd(false);
-                  onChange?.({});
-                }}
-                className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                Clear
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-1.5 text-sm bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors"
-              >
-                Done
-              </button>
-            </div>
           </div>
         )}
       </div>
@@ -606,7 +635,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
 export default DateTimePicker;
 
-// Demo component to show usage
+// Demo component
 export const DateTimePickerDemo = () => {
   const [singleDate, setSingleDate] = useState<DateTimeValue>({});
   const [dateTime, setDateTime] = useState<DateTimeValue>({});
@@ -671,31 +700,25 @@ export const DateTimePickerDemo = () => {
 
       <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Single Date Value:
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800">Single Date:</h3>
           <pre className="bg-white p-4 rounded-lg border text-sm overflow-x-auto">
             {JSON.stringify(singleDate, null, 2)}
           </pre>
 
-          <h3 className="text-lg font-semibold text-gray-800">
-            DateTime Value:
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800">DateTime:</h3>
           <pre className="bg-white p-4 rounded-lg border text-sm overflow-x-auto">
             {JSON.stringify(dateTime, null, 2)}
           </pre>
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Date Range Value:
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800">Date Range:</h3>
           <pre className="bg-white p-4 rounded-lg border text-sm overflow-x-auto">
             {JSON.stringify(dateRange, null, 2)}
           </pre>
 
           <h3 className="text-lg font-semibold text-gray-800">
-            DateTime Range Value:
+            DateTime Range:
           </h3>
           <pre className="bg-white p-4 rounded-lg border text-sm overflow-x-auto">
             {JSON.stringify(dateTimeRange, null, 2)}
