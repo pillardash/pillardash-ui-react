@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, X, Loader2 } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 
 export interface SelectOption {
   value: string;
@@ -24,11 +24,6 @@ export type SelectProps = {
   fullWidth?: boolean;
   searchable?: boolean;
 
-  // NEW: Backend search props
-  onSearch?: (searchTerm: string) => void | Promise<void>;
-  isSearching?: boolean;
-  searchDebounceMs?: number;
-
   multiple?: boolean;
   maxSelected?: number;
   showSelectedCount?: boolean;
@@ -52,9 +47,6 @@ export default function Select({
   helpText,
   fullWidth = true,
   searchable = false,
-  onSearch,
-  isSearching = false,
-  searchDebounceMs = 300,
   multiple = false,
   maxSelected,
   showSelectedCount = false,
@@ -67,9 +59,13 @@ export default function Select({
     "bottom",
   );
 
+  // Determine default closeOnSelect behavior
+  // Single select: close by default (true)
+  // Multiple select: stay open by default (false)
   const shouldCloseOnSelect =
     closeOnSelect !== undefined ? closeOnSelect : !multiple;
 
+  // Handle both single and multi-select values
   const [selectedOptions, setSelectedOptions] = useState<SelectOption[]>(() => {
     if (!value) return [];
 
@@ -86,8 +82,9 @@ export default function Select({
 
   const selectRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // CRITICAL: This useEffect syncs the component's internal state with the value prop
+  // This is what makes the select work properly in edit/update scenarios
   useEffect(() => {
     if (multiple && Array.isArray(value)) {
       setSelectedOptions(
@@ -103,14 +100,16 @@ export default function Select({
     }
   }, [value, options, multiple]);
 
+  // Calculate dropdown position
   useEffect(() => {
     if (isOpen && selectRef.current) {
       const selectRect = selectRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
-      const dropdownHeight = 250;
+      const dropdownHeight = 250; // Approximate max dropdown height
       const spaceBelow = viewportHeight - selectRect.bottom;
       const spaceAbove = selectRect.top;
 
+      // If there's not enough space below but there's enough space above, position on top
       if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
         setDropdownPosition("top");
       } else {
@@ -119,34 +118,14 @@ export default function Select({
     }
   }, [isOpen]);
 
-  // Handle search with debouncing
-  useEffect(() => {
-    if (!onSearch || !searchTerm) return;
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      onSearch(searchTerm);
-    }, searchDebounceMs);
-
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [searchTerm, onSearch, searchDebounceMs]);
-
-  // Filter options based on search term if using client-side search
-  const filteredOptions =
-    searchable && !onSearch
-      ? options.filter((option) =>
-          (option.label || option.value)
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()),
-        )
-      : options;
+  // Filter options based on search term if searchable
+  const filteredOptions = searchable
+    ? options.filter((option) =>
+        (option.label || option.value)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
+      )
+    : options;
 
   const handleSelect = (option: SelectOption) => {
     if (option.disabled) return;
@@ -159,12 +138,14 @@ export default function Select({
       );
 
       if (isAlreadySelected) {
+        // Remove option if already selected
         newSelectedOptions = selectedOptions.filter(
           (selected) => selected.value !== option.value,
         );
       } else {
+        // Add option if not selected and under max limit
         if (maxSelected && selectedOptions.length >= maxSelected) {
-          return;
+          return; // Don't add if max limit reached
         }
         newSelectedOptions = [...selectedOptions, option];
       }
@@ -174,6 +155,7 @@ export default function Select({
 
     setSelectedOptions(newSelectedOptions);
 
+    // Simulate a standard change event
     const eventValue = multiple
       ? newSelectedOptions.map((opt) => opt.value)
       : newSelectedOptions[0]?.value || "";
@@ -185,6 +167,7 @@ export default function Select({
       },
     } as React.ChangeEvent<HTMLSelectElement>);
 
+    // Close dropdown based on shouldCloseOnSelect
     if (shouldCloseOnSelect) {
       setIsOpen(false);
       setSearchTerm("");
@@ -202,11 +185,13 @@ export default function Select({
     let newSelectedOptions: SelectOption[];
 
     if (allSelected) {
+      // Deselect all filtered options
       newSelectedOptions = selectedOptions.filter(
         (selected) =>
           !selectableOptions.some((option) => option.value === selected.value),
       );
     } else {
+      // Select all filtered options (respecting maxSelected limit)
       const optionsToAdd = selectableOptions.filter(
         (option) =>
           !selectedOptions.some((selected) => selected.value === option.value),
@@ -267,6 +252,7 @@ export default function Select({
     } as React.ChangeEvent<HTMLSelectElement>);
   };
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -284,6 +270,7 @@ export default function Select({
     };
   }, []);
 
+  // Size classes
   const sizeClasses = {
     sm: "text-xs px-3 py-1.5 text-sm min-h-[32px]",
     md: "text-sm px-4 py-2 text-base min-h-[40px]",
@@ -333,8 +320,11 @@ export default function Select({
     );
   };
 
+  // Dropdown positioning classes
   const dropdownPositionClasses =
-    dropdownPosition === "top" ? "bottom-full mb-1" : "top-full mt-1";
+    dropdownPosition === "top"
+      ? "bottom-full mb-1" // Position above the select button
+      : "top-full mt-1"; // Position below the select button (default)
 
   return (
     <div ref={selectRef} className={`${fullWidth ? "w-full" : "w-fit"} mb-4`}>
@@ -408,35 +398,26 @@ export default function Select({
             className={`absolute z-[9999] w-full rounded-lg border border-gray-200 bg-white shadow-xl ${dropdownPositionClasses}`}
             role="listbox"
             style={{
+              // Additional inline styles for maximum compatibility
               zIndex: 9999,
               position: "absolute",
             }}
           >
             {searchable && (
               <div className="sticky top-0 border-b border-gray-100 bg-white p-3 z-[10000]">
-                <div className="relative">
-                  <input
-                    type="text"
-                    className="w-full rounded-md border border-gray-200 px-3 py-2 pr-8 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
-                    placeholder={onSearch ? "Search..." : "Filter..."}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    autoFocus
-                  />
-                  {isSearching && (
-                    <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
-                  )}
-                </div>
+                <input
+                  type="text"
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  autoFocus
+                />
               </div>
             )}
 
             <div className="max-h-60 overflow-auto py-1">
-              {isSearching ? (
-                <div className="px-3 py-8 text-center">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary-500 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">Searching...</p>
-                </div>
-              ) : filteredOptions.length > 0 ? (
+              {filteredOptions.length > 0 ? (
                 <>
                   {multiple && showSelectAll && (
                     <div className="border-b border-gray-100">
@@ -516,10 +497,8 @@ export default function Select({
                   })}
                 </>
               ) : (
-                <div className="px-3 py-8 text-center">
-                  <p className="text-sm text-gray-500">
-                    {searchTerm ? "No results found" : "No options available"}
-                  </p>
+                <div className="px-3 py-2 text-gray-500 text-center">
+                  No options found
                 </div>
               )}
             </div>
@@ -551,78 +530,6 @@ export default function Select({
             />
           )}
         </>
-      )}
-    </div>
-  );
-}
-
-// Demo Component
-function Demo() {
-  const [selectedValue, setSelectedValue] = useState("");
-  const [options, setOptions] = useState([
-    { value: "1", label: "Apple" },
-    { value: "2", label: "Banana" },
-    { value: "3", label: "Cherry" },
-  ]);
-  const [isSearching, setIsSearching] = useState(false);
-
-  const handleBackendSearch = async (searchTerm: string) => {
-    console.log("Searching backend for:", searchTerm);
-    setIsSearching(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    // Mock backend filtering
-    const allFruits = [
-      { value: "1", label: "Apple" },
-      { value: "2", label: "Banana" },
-      { value: "3", label: "Cherry" },
-      { value: "4", label: "Date" },
-      { value: "5", label: "Elderberry" },
-      { value: "6", label: "Fig" },
-      { value: "7", label: "Grape" },
-      { value: "8", label: "Honeydew" },
-    ];
-
-    const filtered = searchTerm
-      ? allFruits.filter((fruit) =>
-          fruit.label.toLowerCase().includes(searchTerm.toLowerCase()),
-        )
-      : allFruits;
-
-    setOptions(filtered);
-    setIsSearching(false);
-  };
-
-  return (
-    <div className="max-w-2xl mx-auto p-8 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Select with Backend Search</h1>
-        <p className="text-gray-600">
-          Type in the search box to trigger backend filtering (simulated with
-          800ms delay)
-        </p>
-      </div>
-
-      <Select
-        label="Choose a fruit"
-        placeholder="Select or search for a fruit"
-        options={options}
-        value={selectedValue}
-        onChange={(e) => setSelectedValue(e.target.value as string)}
-        searchable={true}
-        onSearch={handleBackendSearch}
-        isSearching={isSearching}
-        searchDebounceMs={300}
-      />
-
-      {selectedValue && (
-        <div className="p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm font-medium text-blue-900">
-            Selected value: {selectedValue}
-          </p>
-        </div>
       )}
     </div>
   );
