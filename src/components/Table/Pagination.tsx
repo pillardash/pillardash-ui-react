@@ -10,7 +10,7 @@ export function Pagination({
   onViewChange,
   loading = false,
 }: PaginationProps) {
-  const perPageOptions = [10, 20, 30, 50];
+  const perPageOptions = [10, 20, 30, 50, 100];
   const goToPage = (page: number) => {
     if (page > 0 && page <= totalPages && !loading && onPageChange) {
       onPageChange(page);

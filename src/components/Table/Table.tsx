@@ -2,26 +2,11 @@ import { ReactNode, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 import { Pagination } from "./Pagination";
-import { TableProps } from "./types";
+import { TableProps, ExpandableTableProps } from "./types";
 import { TableSkeleton } from "./TableSkeleton";
 import { EmptyStateCard } from "../Cards";
 
-// Extended interface to support row toggling
-interface ExpandableTableProps<T> extends TableProps<T> {
-  expandableRows?: boolean;
-  expandedRowRender?: (item: T) => ReactNode;
-  onRowToggle?: (item: T, isExpanded: boolean) => void;
-  defaultExpandedRows?: Set<string | number>;
-  getRowKey?: (item: T, index: number) => string | number;
-  paginationMeta?: {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    from: number;
-    to: number;
-  };
-}
+type SortOrder = "asc" | "desc" | null;
 
 export default function Table<T>({
   data,
@@ -42,18 +27,110 @@ export default function Table<T>({
   defaultExpandedRows = new Set(),
   getRowKey = (item: T, index: number) => index,
   paginationMeta,
+  defaultSortKey,
+  defaultSortOrder = "asc",
+  onSort,
 }: ExpandableTableProps<T>) {
   const [expandedRows, setExpandedRows] =
     useState<Set<string | number>>(defaultExpandedRows);
+  const [sortKey, setSortKey] = useState<string | null>(defaultSortKey || null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(
+    defaultSortKey ? defaultSortOrder : null,
+  );
 
-  // Use Laravel pagination meta if available, otherwise fallback to props
+  // Pagination calculations
   const totalItemsCount = paginationMeta?.total || totalItems || data.length;
   const totalPages =
     paginationMeta?.last_page || Math.ceil(totalItemsCount / itemsPerPage);
   const currentPageNumber = paginationMeta?.current_page || currentPage;
   const perPage = paginationMeta?.per_page || itemsPerPage;
-  const currentItems = showPagination ? data : data;
 
+  // Sorting logic
+  const sortedData = useMemo(() => {
+    if (!sortKey || !sortOrder) return data;
+
+    const sorted = [...data].sort((a, b) => {
+      const column = columns.find(
+        (col) => (col.sortKey || col.value) === sortKey,
+      );
+      if (!column) return 0;
+
+      let aValue: any;
+      let bValue: any;
+
+      if (typeof column.value === "function") {
+        // For function-based columns, use the sortKey to get raw values
+        aValue = (a as any)[sortKey];
+        bValue = (b as any)[sortKey];
+      } else {
+        aValue = a[column.value];
+        bValue = b[column.value];
+      }
+
+      // Handle null/undefined
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      // Handle different types
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return sortOrder === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+      }
+
+      // Default comparison
+      return sortOrder === "asc"
+        ? String(aValue).localeCompare(String(bValue))
+        : String(bValue).localeCompare(String(aValue));
+    });
+
+    return sorted;
+  }, [data, sortKey, sortOrder, columns]);
+
+  const currentItems = sortedData;
+
+  // Sorting handler
+  const handleSort = (column: Column<T>) => {
+    if (!column.sortable) return;
+
+    const key = String(column.sortKey || column.value);
+    let newOrder: SortOrder = "asc";
+
+    if (sortKey === key) {
+      if (sortOrder === "asc") newOrder = "desc";
+      else if (sortOrder === "desc") newOrder = null;
+      else newOrder = "asc";
+    }
+
+    setSortKey(newOrder ? key : null);
+    setSortOrder(newOrder);
+
+    if (onSort && newOrder) {
+      onSort(key, newOrder);
+    }
+  };
+
+  const getSortIcon = (column: Column<T>) => {
+    if (!column.sortable) return null;
+
+    const key = String(column.sortKey || column.value);
+    if (sortKey !== key) {
+      return <ArrowUpDown size={14} className="text-gray-400" />;
+    }
+
+    return sortOrder === "asc" ? (
+      <ArrowUp size={14} className="text-blue-600" />
+    ) : (
+      <ArrowDown size={14} className="text-blue-600" />
+    );
+  };
+
+  // Row expansion logic
   const handleRowClick = (item: T, index: number) => {
     if (expandableRows && expandedRowRender) {
       toggleRow(item, index);
@@ -85,13 +162,23 @@ export default function Table<T>({
     return expandedRows.has(rowKey);
   };
 
-  // Default empty state component
   const defaultEmptyState = <EmptyStateCard title="No Record found" />;
 
+  const getAlignmentClass = (align?: "left" | "center" | "right") => {
+    switch (align) {
+      case "center":
+        return "text-center";
+      case "right":
+        return "text-right";
+      default:
+        return "text-left";
+    }
+  };
+
+  // Card Layout Renderer
   const renderCardLayout = () => (
     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {loading &&
-        // Card skeleton for loading state
         Array.from({ length: perPage }).map((_, index) => (
           <div
             key={index}
@@ -176,6 +263,7 @@ export default function Table<T>({
     </div>
   );
 
+  // Table Layout Renderer
   const renderTableLayout = () => (
     <div className="relative overflow-x-auto">
       <table className="w-full">
@@ -183,29 +271,38 @@ export default function Table<T>({
           <tr>
             {expandableRows && (
               <th className="bg-gray-100 px-6 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 w-12 rounded-bl-xl rounded-tl-xl">
-                {/* Toggle column header */}
+                {/* Toggle column */}
               </th>
             )}
             {columns.map((column, index) => (
               <th
                 key={index}
-                className={`bg-gray-100 px-6 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 ${
+                onClick={() => handleSort(column)}
+                className={`bg-gray-100 px-6 py-3 text-sm font-semibold tracking-wider text-gray-500 ${
                   column.width || ""
+                } ${getAlignmentClass(column.align)} ${
+                  column.sortable
+                    ? "cursor-pointer select-none hover:bg-gray-200"
+                    : ""
                 } ${!expandableRows && index === 0 ? "rounded-bl-xl rounded-tl-xl" : ""} ${
                   index === columns.length - 1
                     ? "rounded-br-xl rounded-tr-xl"
                     : ""
-                } `}
+                } ${column.className || ""}`}
+                style={column.width ? { width: column.width } : undefined}
               >
-                {column.title}
+                <div className="flex items-center gap-2 justify-between">
+                  <span>{column.title}</span>
+                  {getSortIcon(column)}
+                </div>
               </th>
             ))}
           </tr>
         </thead>
         <tbody
-          className={`divide-y divide-gray-200 bg-white
-                        ${loading ? "opacity-50" : ""} ${onRowClick || expandableRows ? "cursor-pointer" : ""}
-                    `}
+          className={`divide-y divide-gray-200 bg-white ${loading ? "opacity-50" : ""} ${
+            onRowClick || expandableRows ? "cursor-pointer" : ""
+          }`}
         >
           {loading && (
             <TableSkeleton
@@ -217,10 +314,9 @@ export default function Table<T>({
             ? currentItems.map((item: T, rowIndex) => {
                 const expanded = isRowExpanded(item, rowIndex);
                 return (
-                  <>
+                  <React.Fragment key={rowIndex}>
                     <tr
                       onClick={() => handleRowClick(item, rowIndex)}
-                      key={rowIndex}
                       className={`hover:bg-gray-50 transition-colors duration-150 ${
                         expanded ? "bg-blue-50" : ""
                       }`}
@@ -245,7 +341,12 @@ export default function Table<T>({
                       {columns.map((column, colIndex) => (
                         <td
                           key={colIndex}
-                          className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800"
+                          className={`whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800 ${getAlignmentClass(
+                            column.align,
+                          )} ${column.className || ""}`}
+                          style={
+                            column.width ? { width: column.width } : undefined
+                          }
                         >
                           {typeof column.value === "function"
                             ? column.value(item)
@@ -262,7 +363,7 @@ export default function Table<T>({
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })
             : !loading && (
@@ -282,7 +383,6 @@ export default function Table<T>({
 
   return (
     <>
-      {/* Responsive layout: Card on mobile, Table on desktop (unless useCardLayout is true) */}
       {useCardLayout ? (
         renderCardLayout()
       ) : (
