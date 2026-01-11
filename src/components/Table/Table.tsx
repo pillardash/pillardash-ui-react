@@ -1,10 +1,11 @@
-import { ReactNode, useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import {ReactNode, useMemo, useState} from "react";
+import {ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, ChevronRight} from "lucide-react";
 
 import { Pagination } from "./Pagination";
-import { TableProps, ExpandableTableProps } from "./types";
+import {ExpandableTableProps, Column} from "./types";
 import { TableSkeleton } from "./TableSkeleton";
 import { EmptyStateCard } from "../Cards";
+import React from "react";
 
 type SortOrder = "asc" | "desc" | null;
 
