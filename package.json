@@ -1,6 +1,6 @@
 {
   "name": "pillardash-ui-react",
-  "version": "0.1.132",
+  "version": "0.1.133",
   "type": "module",
   "description": "Pillardash reusable react components",
   "main": "dist/cjs/index.js",
@@ -61,12 +61,24 @@
     "lucide-react": ">=0.400.0"
   },
   "peerDependenciesMeta": {
-    "@tiptap/extension-image": { "optional": true },
-    "@tiptap/extension-link": { "optional": true },
-    "@tiptap/extension-underline": { "optional": true },
-    "@tiptap/react": { "optional": true },
-    "@tiptap/starter-kit": { "optional": true },
-    "lucide-react": { "optional": true }
+    "@tiptap/extension-image": {
+      "optional": true
+    },
+    "@tiptap/extension-link": {
+      "optional": true
+    },
+    "@tiptap/extension-underline": {
+      "optional": true
+    },
+    "@tiptap/react": {
+      "optional": true
+    },
+    "@tiptap/starter-kit": {
+      "optional": true
+    },
+    "lucide-react": {
+      "optional": true
+    }
   },
   "dependencies": {
     "classnames": "^2.3.2"
