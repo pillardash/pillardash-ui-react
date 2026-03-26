@@ -12,7 +12,7 @@ export interface ButtonProps {
   type?: "button" | "submit" | "reset";
 
   /** Size of the button */
-  size?: "small" | "medium" | "large" | "sm" | "md" | "lg" | "xs";
+  size?: "xs" | "sm" | "md" | "lg";
 
   /** Visual style variant */
   variant?: "primary" | "secondary" | "dark" | "neutral" | "danger" | "default";
@@ -40,7 +40,7 @@ const Button: FC<ButtonProps> = ({
   children,
   onClick,
   type = "button",
-  size = "medium",
+  size = "md",
   variant = "primary",
   disabled = false,
   className,
@@ -52,12 +52,9 @@ const Button: FC<ButtonProps> = ({
   const baseClasses =
     "rounded-xl text-sm transition-all font-semibold duration-300 inline-flex items-center justify-center ease-in-out";
   const sizeClasses = {
-    small: "px-5 py-2 text-sm",
-    sm: "px-5 py-2 text-sm",
     xs: "px-3 py-1 text-sm",
-    medium: "px-6 py-3 text-md",
+    sm: "px-5 py-2 text-sm",
     md: "px-6 py-3 text-md",
-    large: "px-8 py-4 text-lg",
     lg: "px-8 py-4 text-lg",
   };
 
@@ -102,9 +99,9 @@ const Button: FC<ButtonProps> = ({
   const spinnerClasses = classNames(
     "animate-spin -ml-1 mr-3",
     {
-      "h-4 w-4": size === "small",
-      "h-5 w-5": size === "medium",
-      "h-6 w-6": size === "large",
+      "h-4 w-4": size === "xs" || size === "sm",
+      "h-5 w-5": size === "md",
+      "h-6 w-6": size === "lg",
     },
     variant === "primary" ? "text-white" : "text-primary",
   );

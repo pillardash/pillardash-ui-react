@@ -5,68 +5,74 @@ import dts from "rollup-plugin-dts";
 import terser from "@rollup/plugin-terser";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
-import postcss from "rollup-plugin-postcss";
+const preserveUseClient = {
+  name: "preserve-use-client",
+  generateBundle(options, bundle) {
+    for (const [, chunk] of Object.entries(bundle)) {
+      if (chunk.type === "chunk") {
+        const hasUseClient = Object.keys(chunk.modules || {}).some(
+          (moduleId) => {
+            try {
+              const fs = require("fs");
+              if (fs.existsSync(moduleId) && moduleId.endsWith(".tsx")) {
+                const content = fs.readFileSync(moduleId, "utf8");
+                return content.trim().startsWith('"use client"');
+              }
+            } catch (e) {}
+            return false;
+          },
+        );
 
-const packageJson = require("./package.json");
+        if (hasUseClient && !chunk.code.includes('"use client"')) {
+          chunk.code = '"use client";\n' + chunk.code;
+        }
+      }
+    }
+  },
+};
+
+const sharedPlugins = [
+  peerDepsExternal(),
+  resolve(),
+  commonjs(),
+  typescript({ tsconfig: "./tsconfig.json" }),
+  preserveUseClient,
+  terser(),
+];
 
 export default [
-    {
-        input: "src/index.ts",
-        output: [
-            {
-                file: packageJson.main,
-                format: "cjs",
-                sourcemap: true,
-            },
-            {
-                file: packageJson.module,
-                format: "esm",
-                sourcemap: true,
-            },
-        ],
-        plugins: [
-            peerDepsExternal(),
-            resolve(),
-            commonjs(),
-            typescript({ tsconfig: "./tsconfig.json" }),
-            // Add this custom plugin to preserve "use client" directives
-            {
-                name: 'preserve-use-client',
-                generateBundle(options, bundle) {
-                    for (const [fileName, chunk] of Object.entries(bundle)) {
-                        if (chunk.type === 'chunk') {
-                            // Check if any of the modules in this chunk had "use client"
-                            const hasUseClient = Object.keys(chunk.modules || {}).some(moduleId => {
-                                // Read the original file to check for "use client"
-                                try {
-                                    const fs = require('fs');
-                                    if (fs.existsSync(moduleId) && moduleId.endsWith('.tsx')) {
-                                        const content = fs.readFileSync(moduleId, 'utf8');
-                                        return content.trim().startsWith('"use client"');
-                                    }
-                                } catch (e) {
-                                    // Fallback to checking code content
-                                }
-                                return false;
-                            });
-
-                            // If any module had "use client", add it to the bundle
-                            if (hasUseClient && !chunk.code.includes('"use client"')) {
-                                chunk.code = '"use client";\n' + chunk.code;
-                            }
-                        }
-                    }
-                }
-            },
-            terser(),
-            postcss(),
-        ],
-        external: ["react", "react-dom"],
+  // CJS output
+  {
+    input: "src/index.ts",
+    output: {
+      dir: "dist/cjs",
+      format: "cjs",
+      preserveModules: true,
+      preserveModulesRoot: "src",
+      sourcemap: true,
+      entryFileNames: "[name].js",
     },
-    {
-        input: "src/index.ts",
-        output: [{ file: packageJson.types }],
-        plugins: [dts.default()],
-        external: [/\.css$/],
+    plugins: sharedPlugins,
+    external: ["react", "react-dom"],
+  },
+  {
+    input: "src/index.ts",
+    output: {
+      dir: "dist/esm",
+      format: "esm",
+      preserveModules: true,
+      preserveModulesRoot: "src",
+      sourcemap: true,
+      entryFileNames: "[name].mjs",
     },
+    plugins: sharedPlugins,
+    external: ["react", "react-dom"],
+  },
+  // Type declarations
+  {
+    input: "src/index.ts",
+    output: [{ file: "dist/index.d.ts" }],
+    plugins: [dts.default()],
+    external: [/\.css$/],
+  },
 ];

@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --pd-primary: 14 138 116;
+    --pd-primary-50: 240 253 250;
+    --pd-primary-100: 204 251 241;
+    --pd-primary-400: 45 212 191;
+    --pd-primary-500: 20 184 166;
+    --pd-primary-600: 13 148 136;
+    --pd-primary-700: 15 118 110;
+    --pd-primary-800: 17 94 89;
+    --pd-primary-900: 19 78 74;
+    --pd-secondary: 14 138 170;
+    --pd-dark: 31 41 55;
+  }
+}

@@ -154,7 +154,7 @@ export function Pagination({
               disabled={currentPage === totalPages || loading}
               type="button"
               variant="primary"
-              size="small"
+              size="sm"
               outline
             >
               Next Page
