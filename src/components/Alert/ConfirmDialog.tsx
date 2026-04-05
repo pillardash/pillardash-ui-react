@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AlertCircle, AlertTriangle, CheckCircle, Info } from "lucide-react";
 import { AlertType } from "./Alert";
 
@@ -14,6 +14,32 @@ interface ConfirmDialogProps {
   onCancel: () => void;
 }
 
+const CONFIRM_CONFIG: Record<
+  AlertType,
+  { icon: React.ReactElement; iconColor: string; buttonColor: string }
+> = {
+  success: {
+    icon: <CheckCircle className="h-6 w-6" />,
+    iconColor: "text-green-500",
+    buttonColor: "bg-green-600 hover:bg-green-700",
+  },
+  error: {
+    icon: <AlertCircle className="h-6 w-6" />,
+    iconColor: "text-rose-500",
+    buttonColor: "bg-rose-600 hover:bg-rose-700",
+  },
+  info: {
+    icon: <Info className="h-6 w-6" />,
+    iconColor: "text-blue-500",
+    buttonColor: "bg-blue-600 hover:bg-blue-700",
+  },
+  warning: {
+    icon: <AlertTriangle className="h-6 w-6" />,
+    iconColor: "text-amber-500",
+    buttonColor: "bg-amber-600 hover:bg-amber-700",
+  },
+};
+
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isOpen,
   message,
@@ -25,32 +51,18 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   onCancel,
 }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCancel();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onCancel]);
+
   if (!isOpen) return null;
 
-  const config = {
-    success: {
-      icon: <CheckCircle className="h-6 w-6" />,
-      iconColor: "text-green-500",
-      buttonColor: "bg-green-600 hover:bg-green-700",
-    },
-    error: {
-      icon: <AlertCircle className="h-6 w-6" />,
-      iconColor: "text-rose-500",
-      buttonColor: "bg-rose-600 hover:bg-rose-700",
-    },
-    info: {
-      icon: <Info className="h-6 w-6" />,
-      iconColor: "text-blue-500",
-      buttonColor: "bg-blue-600 hover:bg-blue-700",
-    },
-    warning: {
-      icon: <AlertTriangle className="h-6 w-6" />,
-      iconColor: "text-amber-500",
-      buttonColor: "bg-amber-600 hover:bg-amber-700",
-    },
-  };
-
-  const { icon, iconColor, buttonColor } = config[type];
+  const { icon, iconColor, buttonColor } = CONFIRM_CONFIG[type];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -85,6 +97,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </button>
           <button
             onClick={onConfirm}
+            autoFocus
             className={`px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${buttonColor}`}
           >
             {confirmText}

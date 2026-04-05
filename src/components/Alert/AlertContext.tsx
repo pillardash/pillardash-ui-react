@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import Alert, { AlertProps, AlertType } from "./Alert";
 import ConfirmDialog from "./ConfirmDialog";
 
@@ -28,53 +28,49 @@ interface ConfirmState {
 
 let globalAlertRef: AlertContextProps | null = null;
 
-export const AlertContext = createContext<AlertContextProps | undefined>(
-  undefined,
-);
+export const AlertContext = createContext<AlertContextProps | undefined>(undefined);
 
 export interface AlertItem extends AlertProps {
   id: string;
 }
 
-export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
 
   const removeAlert = useCallback((id: string) => {
-    setAlerts((prevAlerts) => prevAlerts.filter((toast) => toast.id !== id));
+    setAlerts((prev) => prev.filter((alert) => alert.id !== id));
   }, []);
 
   const showAlert = useCallback(
     (props: Omit<AlertProps, "onClose">) => {
       const id = Math.random().toString(36).substring(2, 9);
-      const newAlert: AlertItem = {
-        ...props,
-        id,
-        onClose: () => removeAlert(id),
-      };
-      setAlerts((prevAlerts) => [...prevAlerts, newAlert]);
+      setAlerts((prev) => [...prev, { ...props, id, onClose: () => removeAlert(id) }]);
     },
     [removeAlert],
   );
 
-  const createAlertFn = useCallback(
-    (type: AlertType) => (message: string, description?: string) => {
-      showAlert({ message, description, type });
-    },
+  const success = useCallback(
+    (message: string, description?: string) => showAlert({ message, description, type: "success" }),
+    [showAlert],
+  );
+  const error = useCallback(
+    (message: string, description?: string) => showAlert({ message, description, type: "error" }),
+    [showAlert],
+  );
+  const info = useCallback(
+    (message: string, description?: string) => showAlert({ message, description, type: "info" }),
+    [showAlert],
+  );
+  const warning = useCallback(
+    (message: string, description?: string) => showAlert({ message, description, type: "warning" }),
     [showAlert],
   );
 
   const confirm = useCallback(
     (message: string, options: ConfirmOptions = {}): Promise<boolean> => {
       return new Promise((resolve) => {
-        setConfirmState({
-          isOpen: true,
-          message,
-          options,
-          resolve,
-        });
+        setConfirmState({ isOpen: true, message, options, resolve });
       });
     },
     [],
@@ -90,32 +86,22 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({
     [confirmState],
   );
 
-  const contextValue = {
-    showAlert,
-    success: createAlertFn("success"),
-    error: createAlertFn("error"),
-    info: createAlertFn("info"),
-    warning: createAlertFn("warning"),
-    confirm,
-  };
+  const contextValue = useMemo(
+    () => ({ showAlert, success, error, info, warning, confirm }),
+    [showAlert, success, error, info, warning, confirm],
+  );
 
-  // Set the global reference when provider mounts
-  globalAlertRef = contextValue;
+  // Side effect outside of render
+  useEffect(() => {
+    globalAlertRef = contextValue;
+  }, [contextValue]);
 
   return (
     <AlertContext.Provider value={contextValue}>
       {children}
-      <div className="fixed right-4 top-4 z-50 space-y-2 w-full max-w-xs">
-        {alerts.map((alert, index) => (
-          <div
-            key={alert.id}
-            style={{
-              transform: `translateY(${index * 10}px)`,
-              zIndex: 50 - index,
-            }}
-          >
-            <Alert {...alert} />
-          </div>
+      <div className="fixed right-4 top-4 z-50 flex w-full max-w-sm flex-col gap-2">
+        {alerts.map((alert) => (
+          <Alert key={alert.id} {...alert} />
         ))}
       </div>
       {confirmState && (
@@ -176,10 +162,7 @@ const alert = {
     }
     globalAlertRef.showAlert(props);
   },
-  confirm: async (
-    message: string,
-    options?: ConfirmOptions,
-  ): Promise<boolean> => {
+  confirm: async (message: string, options?: ConfirmOptions): Promise<boolean> => {
     if (!globalAlertRef) {
       console.warn("AlertProvider not mounted yet");
       return false;
