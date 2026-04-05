@@ -236,7 +236,7 @@ const ConfirmationAlert: React.FC<ConfirmationPopupProps> = ({
                             <Button
                                 variant='neutral'
                                 outline
-                                size='small'
+                                size='sm'
                                 data-cancel-button=''
                                 onClick={handleCancel}
                                 disabled={isLoading}

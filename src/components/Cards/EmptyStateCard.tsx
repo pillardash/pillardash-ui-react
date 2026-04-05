@@ -31,7 +31,7 @@ export default function EmptyStateCard({
 
                 {btnText && onClick && (
                     <div className='mt-6'>
-                        <Button onClick={onClick} size='medium'>
+                        <Button onClick={onClick} size='md'>
                             {btnText}
                         </Button>
                     </div>
