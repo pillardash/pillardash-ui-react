@@ -17,3 +17,18 @@
     --pd-dark: 31 41 55;
   }
 }
+
+@layer components {
+  .pd-text-editor .ProseMirror table {
+    @apply w-full border-collapse;
+  }
+
+  .pd-text-editor .ProseMirror th,
+  .pd-text-editor .ProseMirror td {
+    @apply border border-gray-300 px-3 py-2 align-top;
+  }
+
+  .pd-text-editor .ProseMirror th {
+    @apply bg-gray-100 font-semibold;
+  }
+}

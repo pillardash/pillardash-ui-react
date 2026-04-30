@@ -1,4 +1,5 @@
 const animate = require("tailwindcss-animate");
+const typography = require("@tailwindcss/typography");
 
 const withOpacity = (variable, fallback) => `rgb(var(${variable}, ${fallback}) / <alpha-value>)`;
 
@@ -23,5 +24,5 @@ module.exports = {
       },
     },
   },
-  plugins: [animate],
+  plugins: [animate, typography],
 };

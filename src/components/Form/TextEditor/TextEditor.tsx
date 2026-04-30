@@ -1,321 +1,192 @@
 import React from "react";
-
-import Bold from "@tiptap/extension-bold";
-import BulletList from "@tiptap/extension-bullet-list";
-import Code from "@tiptap/extension-code";
-import CodeBlock from "@tiptap/extension-code-block";
-import Document from "@tiptap/extension-document";
-import Heading from "@tiptap/extension-heading";
-import Italic from "@tiptap/extension-italic";
-import Link from "@tiptap/extension-link";
-import ListItem from "@tiptap/extension-list-item";
-import OrderedList from "@tiptap/extension-ordered-list";
-import Paragraph from "@tiptap/extension-paragraph";
-import Strike from "@tiptap/extension-strike";
-import Text from "@tiptap/extension-text";
-import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import {
-    Bold as BoldIcon,
-    Italic as ItalicIcon,
-    Underline as UnderlineIcon,
-    List,
-    ListOrdered,
-    Heading1,
-    Heading2,
-    Heading3,
-    Code as CodeIcon,
-    FileCode,
-    Link as LinkIcon,
-    Strikethrough,
-    Quote,
-    Minus,
-    Undo2,
-    Redo2, SeparatorVertical
-} from "lucide-react";
+import ImagePopover from "./ImagePopover";
+import LinkPopover from "./LinkPopover";
+import { AlignmentTools, CodeTools, FormattingTools, HistoryTools, InsertTools, ListTools, QuoteTools, TableTools } from "./ToolbarGroups";
+import { createTextEditorExtensions, editorContentClassName, type TextEditorFeatures, type ToolbarPreset, toolbarPresetFeatures, withDefaultFeatures } from "./extensions";
+import { HeadingLevel, HeadingSelect, ToolbarDivider } from "./toolbar";
 
 export interface TextEditorProps {
     initialContent?: string;
     onUpdate: (content: string) => void;
+    features?: TextEditorFeatures;
+    stickyToolbar?: boolean;
+    toolbarPreset?: ToolbarPreset;
+    onImageUpload?: (file: File) => Promise<{ url: string; assetId?: string }>;
 }
 
-const TextEditor: React.FC<TextEditorProps> = ({ initialContent = "", onUpdate }) => {
+const TextEditor: React.FC<TextEditorProps> = ({ initialContent = "", onUpdate, features, stickyToolbar = true, toolbarPreset = "standard", onImageUpload }) => {
+    const enabledFeatures = React.useMemo(() => withDefaultFeatures({ ...toolbarPresetFeatures[toolbarPreset], ...features }), [features, toolbarPreset]);
+    const [slashOpen, setSlashOpen] = React.useState(false);
+    const [bubblePos, setBubblePos] = React.useState<{ top: number; left: number } | null>(null);
+
     const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                heading: false,
-                codeBlock: false,
-            }),
-            Document,
-            Paragraph,
-            Text,
-            Bold,
-            Italic,
-            Underline,
-            Strike,
-            Code,
-            CodeBlock.configure({
-                HTMLAttributes: {
-                    class: 'bg-gray-100 p-3 rounded text-sm font-mono',
-                },
-            }),
-            Heading.configure({
-                levels: [1, 2, 3],
-            }),
-            BulletList,
-            OrderedList,
-            ListItem,
-            Link.configure({
-                openOnClick: false,
-                HTMLAttributes: {
-                    class: 'text-blue-600 underline',
-                },
-            }),
-        ],
+        extensions: createTextEditorExtensions(enabledFeatures),
         content: initialContent,
         onUpdate: ({ editor }) => {
             onUpdate(editor.getHTML());
         },
         editorProps: {
             attributes: {
-                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4',
+                class: editorContentClassName,
+            },
+            handleKeyDown: (_view, event) => {
+                if (!enabledFeatures.slashCommand) return false;
+                if (event.key === "/") {
+                    setSlashOpen(true);
+                    return false;
+                }
+                if (event.key === "Escape") {
+                    setSlashOpen(false);
+                }
+                return false;
             },
         },
         immediatelyRender: false,
     });
 
-    const addLink = () => {
-        const url = window.prompt('Enter URL:');
-        if (url) {
-            editor?.chain().focus().setLink({ href: url }).run();
+    React.useEffect(() => {
+        if (!editor) return;
+        const updateBubble = () => {
+            const { from, to } = editor.state.selection;
+            if (from === to || !editor.isFocused) {
+                setBubblePos(null);
+                return;
+            }
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) {
+                setBubblePos(null);
+                return;
+            }
+            const rect = selection.getRangeAt(0).getBoundingClientRect();
+            setBubblePos({ top: rect.top + window.scrollY - 48, left: rect.left + window.scrollX + rect.width / 2 });
+        };
+        const onBlur = () => setBubblePos(null);
+        editor.on("selectionUpdate", updateBubble);
+        editor.on("blur", onBlur);
+        return () => {
+            editor.off("selectionUpdate", updateBubble);
+            editor.off("blur", onBlur);
+        };
+    }, [editor]);
+
+    const lastAppliedInitialContentRef = React.useRef(initialContent);
+
+    React.useEffect(() => {
+        if (!editor) {
+            return;
         }
+
+        if (initialContent === lastAppliedInitialContentRef.current) {
+            return;
+        }
+
+        const currentContent = editor.getHTML();
+        const wasUntouchedSinceLastSync = currentContent === lastAppliedInitialContentRef.current;
+
+        if (!wasUntouchedSinceLastSync) {
+            return;
+        }
+
+        editor.commands.setContent(initialContent || "", { emitUpdate: false });
+        lastAppliedInitialContentRef.current = initialContent;
+    }, [editor, initialContent]);
+
+    const getActiveHeadingLevel = (): HeadingLevel => {
+        if (editor?.isActive("heading", { level: 1 })) return 1;
+        if (editor?.isActive("heading", { level: 2 })) return 2;
+        if (editor?.isActive("heading", { level: 3 })) return 3;
+        return 0;
     };
 
-    const removeLink = () => {
-        editor?.chain().focus().unsetLink().run();
-    };
+    const hasAnyMainTools =
+        enabledFeatures.heading ||
+        enabledFeatures.formatting ||
+        enabledFeatures.lists ||
+        enabledFeatures.code ||
+        enabledFeatures.quote ||
+        enabledFeatures.link ||
+        enabledFeatures.table ||
+        enabledFeatures.image ||
+        enabledFeatures.taskList ||
+        enabledFeatures.alignment;
 
     if (!editor) {
         return <div className="rounded-lg border bg-gray-50 h-48 animate-pulse"></div>;
     }
 
     return (
-        <div className='rounded-lg border border-gray-200 shadow-sm'>
+        <div className='pd-text-editor w-full rounded-lg border border-gray-200 shadow-sm'>
             {/* Toolbar */}
-            <div className='flex flex-wrap items-center gap-1 border-b bg-gray-50 p-3'>
+            <div className={`flex flex-wrap items-center gap-1 border-b bg-gray-50 p-3 ${stickyToolbar ? "sticky top-0 z-10" : ""}`}>
                 {/* Undo/Redo */}
-                <button
-                    onClick={() => editor.chain().focus().undo().run()}
-                    className={`p-2 rounded hover:bg-gray-200 transition-colors ${!editor.can().undo() ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    type='button'
-                    disabled={!editor.can().undo()}
-                    title="Undo"
-                >
-                    <Undo2 size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().redo().run()}
-                    className={`p-2 rounded hover:bg-gray-200 transition-colors ${!editor.can().redo() ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    type='button'
-                    disabled={!editor.can().redo()}
-                    title="Redo"
-                >
-                    <Redo2 size={16} />
-                </button>
+                {enabledFeatures.history && <HistoryTools editor={editor} />}
 
-                <div className="mx-2 h-6 w-px bg-gray-300"></div>
+                {enabledFeatures.history && hasAnyMainTools && <ToolbarDivider />}
 
                 {/* Headings */}
-                <button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("heading", { level: 1 })
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Heading 1"
-                >
-                    <Heading1 size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("heading", { level: 2 })
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Heading 2"
-                >
-                    <Heading2 size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("heading", { level: 3 })
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Heading 3"
-                >
-                    <Heading3 size={16} />
-                </button>
+                {enabledFeatures.heading && <HeadingSelect value={getActiveHeadingLevel()} onChange={(level) => {
+                    if (level === 0) editor.chain().focus().setParagraph().run();
+                    else editor.chain().focus().toggleHeading({ level }).run();
+                }} />}
 
-                <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300" />
+                {enabledFeatures.heading && (enabledFeatures.formatting || enabledFeatures.lists || enabledFeatures.code || enabledFeatures.quote || enabledFeatures.link || enabledFeatures.table || enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
 
-                {/* Text Formatting */}
-                <button
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("bold")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Bold"
-                >
-                    <BoldIcon size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("italic")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Italic"
-                >
-                    <ItalicIcon size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleUnderline().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("underline")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Underline"
-                >
-                    <UnderlineIcon size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleStrike().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("strike")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Strikethrough"
-                >
-                    <Strikethrough size={16} />
-                </button>
+                {enabledFeatures.formatting && <FormattingTools editor={editor} />}
 
-                <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300" />
+                {enabledFeatures.formatting && (enabledFeatures.alignment || enabledFeatures.lists || enabledFeatures.code || enabledFeatures.quote || enabledFeatures.link || enabledFeatures.table || enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
 
-                {/* Lists */}
-                <button
-                    onClick={() => editor.chain().focus().toggleBulletList().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("bulletList")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Bullet List"
-                >
-                    <List size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("orderedList")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Numbered List"
-                >
-                    <ListOrdered size={16} />
-                </button>
+                {enabledFeatures.alignment && <AlignmentTools editor={editor} />}
 
-                <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300" />
+                {enabledFeatures.alignment && (enabledFeatures.lists || enabledFeatures.code || enabledFeatures.quote || enabledFeatures.link || enabledFeatures.table || enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
 
-                {/* Code */}
-                <button
-                    onClick={() => editor.chain().focus().toggleCode().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("code")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Inline Code"
-                >
-                    <CodeIcon size={16} />
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("codeBlock")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Code Block"
-                >
-                    <FileCode size={16} />
-                </button>
+                {enabledFeatures.lists && <ListTools editor={editor} />}
 
-                <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300" />
+                {enabledFeatures.lists && (enabledFeatures.code || enabledFeatures.quote || enabledFeatures.link || enabledFeatures.table || enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
 
-                {/* Quote */}
-                <button
-                    onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                    className={`p-2 rounded transition-colors ${
-                        editor.isActive("blockquote")
-                            ? "bg-blue-200 text-blue-800"
-                            : "hover:bg-gray-200"
-                    }`}
-                    type='button'
-                    title="Quote"
-                >
-                    <Quote size={16} />
-                </button>
+                {enabledFeatures.code && <CodeTools editor={editor} />}
 
-                <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300" />
+                {enabledFeatures.code && (enabledFeatures.quote || enabledFeatures.link || enabledFeatures.table || enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
+
+                {enabledFeatures.quote && <QuoteTools editor={editor} />}
+
+                {enabledFeatures.quote && (enabledFeatures.link || enabledFeatures.table || enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
 
                 {/* Link */}
-                {editor.isActive('link') ? (
-                    <button
-                        onClick={removeLink}
-                        className="p-2 rounded bg-blue-200 text-blue-800 hover:bg-blue-300 transition-colors"
-                        type='button'
-                        title="Remove Link"
-                    >
-                        <LinkIcon size={16} />
-                    </button>
-                ) : (
-                    <button
-                        onClick={addLink}
-                        className="p-2 rounded hover:bg-gray-200 transition-colors"
-                        type='button'
-                        title="Add Link"
-                    >
-                        <LinkIcon size={16} />
-                    </button>
-                )}
+                {enabledFeatures.link && <LinkPopover editor={editor} />}
+
+                {enabledFeatures.link && (enabledFeatures.table || enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
+
+                {enabledFeatures.table && <TableTools editor={editor} />}
+
+                {enabledFeatures.table && (enabledFeatures.image || enabledFeatures.taskList) && <ToolbarDivider />}
+
+                {enabledFeatures.image && <ImagePopover editor={editor} onImageUpload={onImageUpload} />}
+
+                {enabledFeatures.image && enabledFeatures.taskList && <ToolbarDivider />}
+
+                {enabledFeatures.taskList && <InsertTools editor={editor} />}
             </div>
+
+            {stickyToolbar === false && bubblePos && (
+                <div className="fixed z-20 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-1 shadow-lg" style={{ top: bubblePos.top, left: bubblePos.left }}>
+                    <FormattingTools editor={editor} />
+                    {enabledFeatures.link && <LinkPopover editor={editor} />}
+                </div>
+            )}
+
+            {enabledFeatures.slashCommand && slashOpen && (
+                <div className="absolute left-4 top-16 z-20 w-56 rounded-lg border border-gray-200 bg-white p-2 shadow-lg">
+                    <button type="button" className="block w-full rounded px-2 py-1 text-left text-sm hover:bg-gray-100" onClick={() => { editor.chain().focus().toggleHeading({ level: 1 }).run(); setSlashOpen(false); }}>Heading 1</button>
+                    <button type="button" className="block w-full rounded px-2 py-1 text-left text-sm hover:bg-gray-100" onClick={() => { editor.chain().focus().toggleBulletList().run(); setSlashOpen(false); }}>Bullet List</button>
+                    <button type="button" className="block w-full rounded px-2 py-1 text-left text-sm hover:bg-gray-100" onClick={() => { editor.chain().focus().toggleCodeBlock().run(); setSlashOpen(false); }}>Code Block</button>
+                </div>
+            )}
 
             {/* Editor */}
             <EditorContent
                 editor={editor}
-                className='min-h-[300px] focus-within:bg-white'
+                className='w-full min-h-[300px] focus-within:bg-white'
             />
         </div>
     );
