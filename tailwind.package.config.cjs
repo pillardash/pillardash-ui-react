@@ -4,6 +4,7 @@ const typography = require("@tailwindcss/typography");
 const withOpacity = (variable, fallback) => `rgb(var(${variable}, ${fallback}) / <alpha-value>)`;
 
 module.exports = {
+  darkMode: "class",
   content: ["./src/components/**/*.{ts,tsx}"],
   theme: {
     extend: {

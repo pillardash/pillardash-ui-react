@@ -58,8 +58,8 @@ export const CenterModal: Story = {
     render: () => (
         <ModalWrapper size="md" position="center" title="Center Modal">
             <div className="space-y-3">
-                <p className="text-gray-600">This modal is centered on the screen.</p>
-                <p className="text-gray-600">It supports any content you need to display.</p>
+                <p className="text-gray-600 dark:text-gray-300">This modal is centered on the screen.</p>
+                <p className="text-gray-600 dark:text-gray-300">It supports any content you need to display.</p>
             </div>
         </ModalWrapper>
     ),
@@ -69,9 +69,9 @@ export const RightDrawer: Story = {
     render: () => (
         <ModalWrapper size="md" position="right" title="Right Drawer" maxHeight>
             <div className="space-y-3">
-                <p className="text-gray-600">This modal slides in from the right like a drawer.</p>
+                <p className="text-gray-600 dark:text-gray-300">This modal slides in from the right like a drawer.</p>
                 {Array.from({ length: 10 }, (_, i) => (
-                    <p key={i} className="text-gray-500 text-sm">Content row {i + 1}</p>
+                    <p key={i} className="text-sm text-gray-500 dark:text-gray-400">Content row {i + 1}</p>
                 ))}
             </div>
         </ModalWrapper>
@@ -82,9 +82,9 @@ export const LeftDrawer: Story = {
     render: () => (
         <ModalWrapper size="sm" position="left" title="Left Panel" maxHeight>
             <div className="space-y-4">
-                <p className="text-gray-600">This panel slides in from the left.</p>
+                <p className="text-gray-600 dark:text-gray-300">This panel slides in from the left.</p>
                 {['Dashboard', 'Students', 'Classes', 'Reports', 'Settings'].map((item) => (
-                    <div key={item} className="rounded-lg bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100">
+                    <div key={item} className="cursor-pointer rounded-lg bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
                         {item}
                     </div>
                 ))}
@@ -115,12 +115,12 @@ export const WithFooter: Story = {
                 >
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                            <input className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm" defaultValue="John Doe" />
+                            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                            <input className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" defaultValue="John Doe" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm" defaultValue="john@example.com" />
+                            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                            <input className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" defaultValue="john@example.com" />
                         </div>
                     </div>
                 </Modal>
@@ -147,7 +147,7 @@ export const Sizes: Story = {
                         size={size}
                         position="center"
                     >
-                        <p className="text-gray-600">This is a <strong>{size}</strong> sized modal.</p>
+                        <p className="text-gray-600 dark:text-gray-300">This is a <strong>{size}</strong> sized modal.</p>
                     </Modal>
                 ))}
             </div>

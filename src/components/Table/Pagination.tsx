@@ -45,7 +45,7 @@ export function Pagination({
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
   return (
-    <div className="flex items-center justify-between border-t border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+    <div className="flex items-center justify-between border-t rounded-lg border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
       <div className="block flex-1 sm:hidden">
         <div className="flex justify-between">
           <button

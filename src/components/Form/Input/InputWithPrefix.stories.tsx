@@ -40,20 +40,20 @@ export const PhoneWithCountryCode: Story = {
                 placeholder="Enter phone number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                icon={<Phone className="h-4 w-4 text-gray-400" />}
+                icon={<Phone className="h-4 w-4 text-gray-400 dark:text-gray-500" />}
                 iconPosition="right"
                 prefixContent={
                     <div className="flex items-center">
                         <select
                             value={country}
                             onChange={(e) => setCountry(e.target.value)}
-                            className="bg-transparent border-none outline-none text-sm font-medium text-gray-700 pr-1"
+                            className="bg-transparent border-none pr-1 text-sm font-medium text-gray-700 outline-none dark:text-gray-200"
                         >
                             {countries.map((c) => (
                                 <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
                             ))}
                         </select>
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                        <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </div>
                 }
                 prefixClassName="min-w-[110px] justify-between"
@@ -79,13 +79,13 @@ export const AmountWithCurrency: Story = {
                         <select
                             value={currency}
                             onChange={(e) => setCurrency(e.target.value)}
-                            className="bg-transparent border-none outline-none text-sm font-medium text-gray-700 pr-1"
+                            className="bg-transparent border-none pr-1 text-sm font-medium text-gray-700 outline-none dark:text-gray-200"
                         >
                             {['NGN', 'USD', 'EUR', 'GBP'].map((c) => (
                                 <option key={c} value={c}>{c}</option>
                             ))}
                         </select>
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                        <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </div>
                 }
                 prefixClassName="min-w-[80px] justify-between"
@@ -104,7 +104,7 @@ export const StaticPrefix: Story = {
                 type="number"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                prefixContent={<DollarSign className="h-4 w-4 text-gray-600" />}
+                prefixContent={<DollarSign className="h-4 w-4 text-gray-600 dark:text-gray-300" />}
                 prefixClassName="min-w-[44px] justify-center"
             />
         );
@@ -120,7 +120,7 @@ export const UsernamePrefix: Story = {
                 placeholder="your-username"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                prefixContent={<span className="text-gray-600 font-medium">@</span>}
+                prefixContent={<span className="font-medium text-gray-600 dark:text-gray-300">@</span>}
                 helpText="Choose a unique username"
             />
         );
@@ -153,7 +153,7 @@ export const WithError: Story = {
             value=""
             onChange={() => {}}
             error="Please enter a valid phone number"
-            prefixContent={<span className="text-gray-600 font-medium">+234</span>}
+            prefixContent={<span className="font-medium text-gray-600 dark:text-gray-300">+234</span>}
         />
     ),
 };

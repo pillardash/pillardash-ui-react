@@ -397,9 +397,9 @@ export const FormIntegration: Story = {
                     helpText="Select up to 5 additional subjects"
                 />
 
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <div className="mt-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
                     <h4 className="font-medium mb-2">Form Data:</h4>
-                    <pre className="text-sm text-gray-600">
+                    <pre className="text-sm text-gray-600 dark:text-gray-300">
             {JSON.stringify(formData, null, 2)}
           </pre>
                 </div>

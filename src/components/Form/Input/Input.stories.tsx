@@ -73,7 +73,7 @@ export const WithIcon: Story = {
                 <Input
                     label="Email"
                     placeholder="you@example.com"
-                    icon={<Mail className="h-4 w-4 text-gray-400" />}
+                    icon={<Mail className="h-4 w-4 text-gray-400 dark:text-gray-500" />}
                     iconPosition="left"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -81,7 +81,7 @@ export const WithIcon: Story = {
                 <Input
                     label="Search"
                     placeholder="Search..."
-                    icon={<Search className="h-4 w-4 text-gray-400" />}
+                    icon={<Search className="h-4 w-4 text-gray-400 dark:text-gray-500" />}
                     iconPosition="right"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -100,11 +100,11 @@ export const PasswordField: Story = {
                 label="Password"
                 type={show ? 'text' : 'password'}
                 placeholder="Enter password"
-                icon={<Lock className="h-4 w-4 text-gray-400" />}
+                icon={<Lock className="h-4 w-4 text-gray-400 dark:text-gray-500" />}
                 iconPosition="left"
                 rightIcon={
                     <button onClick={() => setShow(!show)} type="button">
-                        {show ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+                        {show ? <EyeOff className="h-4 w-4 text-gray-400 dark:text-gray-500" /> : <Eye className="h-4 w-4 text-gray-400 dark:text-gray-500" />}
                     </button>
                 }
                 value={value}

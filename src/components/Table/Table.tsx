@@ -279,7 +279,7 @@ export default function Table<T>({
         <thead>
           <tr>
             {expandableRows && (
-              <th className="w-12 rounded-bl-xl rounded-tl-xl bg-gray-100 px-6 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-800 dark:text-gray-300">
+              <th className="w-12 rounded-bl-lg rounded-tl-lg bg-gray-100 px-6 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-800 dark:text-gray-300">
                 {/* Toggle column */}
               </th>
             )}
@@ -287,15 +287,15 @@ export default function Table<T>({
               <th
                 key={index}
                 onClick={() => handleSort(column)}
-                className={`bg-gray-100 px-6 py-3 text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-800 dark:text-gray-300 ${
+                className={`bg-gray-100 px-6 py-3 text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-700 dark:text-gray-300 ${
                   column.width || ""
                 } ${getAlignmentClass(column.align)} ${
                   column.sortable
                     ? "cursor-pointer select-none hover:bg-gray-200 dark:hover:bg-gray-700"
                     : ""
-                } ${!expandableRows && index === 0 ? "rounded-bl-xl rounded-tl-xl" : ""} ${
+                } ${!expandableRows && index === 0 ? "rounded-bl-lg rounded-tl-lg" : ""} ${
                   index === columns.length - 1
-                    ? "rounded-br-xl rounded-tr-xl"
+                    ? "rounded-br-lg rounded-tr-lg"
                     : ""
                 } ${column.className || ""}`}
                 style={column.width ? { width: column.width } : undefined}
@@ -309,7 +309,7 @@ export default function Table<T>({
           </tr>
         </thead>
         <tbody
-          className={`divide-y divide-gray-200 dark:divide-gray-700  ${loading ? "opacity-50" : ""} ${
+          className={`divide-y divide-gray-200  dark:divide-gray-700  ${loading ? "opacity-50" : ""} ${
             onRowClick || expandableRows ? "cursor-pointer" : ""
           }`}
         >
