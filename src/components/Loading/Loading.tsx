@@ -108,7 +108,7 @@ const Loading: React.FC<LoadingProps> = ({
     const SpinnerLoader = () => (
         <div className="relative">
             <div
-                className={`${sizeClasses[size]} border-4 border-gray-200 rounded-full animate-spin ${
+                className={`${sizeClasses[size]} animate-spin rounded-full border-4 border-gray-200 dark:border-gray-700 ${
                     !isHexColor ? getColorClasses('borderTop') : ''
                 }`}
                 style={isHexColor ? { borderTopColor: color } : {}}
@@ -242,7 +242,7 @@ const Loading: React.FC<LoadingProps> = ({
 
     if (fullScreen) {
         return (
-            <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-gray-950/80">
                 {content}
             </div>
         );
