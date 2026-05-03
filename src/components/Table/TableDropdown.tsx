@@ -122,7 +122,7 @@ export default function TableDropdown({
   const dropdownContent = isOpen && (
     <div
       ref={dropdownRef}
-      className={`fixed z-[9999] w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${dropdownClassName}`}
+      className={`fixed z-[9999] w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:ring-gray-700 ${dropdownClassName}`}
       style={{
         top: `${dropdownPosition.top}px`,
         left: `${dropdownPosition.left}px`,
@@ -134,10 +134,10 @@ export default function TableDropdown({
             key={index}
             className={`flex w-full items-center px-4 py-2 text-left text-sm transition-colors duration-150 ${
               action.disabled
-                ? "cursor-not-allowed bg-gray-50 text-gray-400"
+                ? "cursor-not-allowed bg-gray-50 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
                 : action.variant === "danger"
-                  ? "text-red-700 hover:bg-red-50 hover:text-red-900"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  ? "text-red-700 hover:bg-red-50 hover:text-red-900 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white"
             } `}
             onClick={() => handleActionClick(action)}
             disabled={action.disabled}
@@ -151,7 +151,7 @@ export default function TableDropdown({
         ))}
 
         {actions.length === 0 && (
-          <div className="px-4 py-2 text-sm text-gray-500">
+          <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-300">
             No actions available
           </div>
         )}
@@ -169,7 +169,7 @@ export default function TableDropdown({
           </div>
         ) : (
           <button
-            className="rounded-md border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 focus:ring-offset-2"
+            className="rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
             onClick={toggleDropdown}
             aria-expanded={isOpen}
             aria-haspopup="true"
