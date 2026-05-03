@@ -45,29 +45,31 @@ export function Pagination({
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
   return (
-    <div className="flex items-center justify-between border-t border-gray-200 bg-white py-3 dark:border-gray-700 dark:bg-gray-900">
+    <div className="flex items-center justify-between border-t border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
       <div className="block flex-1 sm:hidden">
         <div className="flex justify-between">
-        <button
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1 || loading}
-          className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 ${
-            currentPage === 1 || loading ? "cursor-not-allowed opacity-50" : ""
-          }`}
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages || loading}
-          className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 ${
-            currentPage === totalPages || loading
-              ? "cursor-not-allowed opacity-50"
-              : ""
-          }`}
-        >
-          Next
-        </button>
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1 || loading}
+            className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 ${
+              currentPage === 1 || loading
+                ? "cursor-not-allowed opacity-50"
+                : ""
+            }`}
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages || loading}
+            className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 ${
+              currentPage === totalPages || loading
+                ? "cursor-not-allowed opacity-50"
+                : ""
+            }`}
+          >
+            Next
+          </button>
         </div>
       </div>
 
@@ -113,7 +115,7 @@ export function Pagination({
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1 || loading}
-               className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 ${
+              className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 ${
                 currentPage === 1 || loading
                   ? "cursor-not-allowed opacity-50"
                   : ""
@@ -145,7 +147,7 @@ export function Pagination({
                   currentPage === number
                     ? "z-10 border-primary-100 bg-primary-50 text-primary"
                     : "border-gray-300 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                 } ${loading ? "cursor-not-allowed opacity-50" : ""}`}
+                } ${loading ? "cursor-not-allowed opacity-50" : ""}`}
               >
                 {number}
               </button>

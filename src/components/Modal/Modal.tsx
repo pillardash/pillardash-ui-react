@@ -163,7 +163,7 @@ const Modal: React.FC<ModalProps> = ({
           ref={modalRef}
           tabIndex={-1}
           className={`
-            relative w-full ${getSizeClasses()} bg-white shadow-2xl transform transition-all duration-700 ease-out flex flex-col
+            relative w-full ${getSizeClasses()} bg-white shadow-2xl transform transition-all duration-700 ease-out flex flex-col dark:bg-gray-900
             ${getModalPositionClasses()}
             ${
               size === "full"
@@ -181,12 +181,12 @@ const Modal: React.FC<ModalProps> = ({
           {/* Header */}
           {(title || showCloseButton) && (
             <div
-              className={`flex items-center justify-between px-6 py-3 border-b border-gray-200 flex-shrink-0 ${headerClassName}`}
+               className={`flex flex-shrink-0 items-center justify-between border-b border-gray-200 px-6 py-3 dark:border-gray-700 ${headerClassName}`}
             >
               {title && (
                 <h2
                   id="modal-title"
-                  className="text-xl font-semibold text-gray-900 truncate pr-4"
+                   className="truncate pr-4 text-xl font-semibold text-gray-900 dark:text-gray-100"
                 >
                   {title}
                 </h2>
@@ -194,7 +194,7 @@ const Modal: React.FC<ModalProps> = ({
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="flex items-center justify-center w-8 h-8 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                   className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300 dark:focus:ring-offset-gray-900"
                   aria-label="Close modal"
                 >
                   <X size={20} />
@@ -216,7 +216,7 @@ const Modal: React.FC<ModalProps> = ({
           {/* Footer */}
           {footer && (
             <div
-              className={`px-6 py-4 border-t border-gray-200  flex-shrink-0 ${size === "full" ? "" : ""} ${footerClassName}`}
+               className={`flex-shrink-0 border-t border-gray-200 px-6 py-4 dark:border-gray-700 ${size === "full" ? "" : ""} ${footerClassName}`}
             >
               {footer}
             </div>

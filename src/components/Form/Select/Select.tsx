@@ -341,7 +341,7 @@ export default function Select({
       {label && (
         <label
           htmlFor={id}
-          className="mb-1 block text-sm font-medium text-gray-700"
+          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
           {label}
           {required && <span className="ml-1 text-red-500">*</span>}
@@ -352,11 +352,11 @@ export default function Select({
         <button
           type="button"
           className={`flex items-center justify-between rounded-lg border ${
-            error ? "border-red-500" : "border-gray-200"
-          } bg-gray-100 shadow-sm ${
+            error ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+          } bg-gray-100 shadow-sm dark:bg-gray-800 ${
             sizeClasses[size]
-          } text-gray-700 hover:border-gray-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 ${
-            disabled ? "cursor-not-allowed bg-gray-50 opacity-50" : ""
+          } text-gray-700 hover:border-gray-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:text-gray-200 dark:hover:border-gray-600 ${
+            disabled ? "cursor-not-allowed bg-gray-50 opacity-50 dark:bg-gray-700" : ""
           } ${className} ${fullWidth ? "w-full" : ""} transition-all duration-200`}
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
@@ -382,21 +382,21 @@ export default function Select({
                   </span>
                 ))}
                 {selectedOptions.length > 3 && (
-                  <span className="text-sm text-gray-500 px-1">
+                  <span className="px-1 text-sm text-gray-500 dark:text-gray-400">
                     +{selectedOptions.length - 3} more
                   </span>
                 )}
               </div>
             ) : (
               <span
-                className={`truncate ${selectedOptions.length === 0 ? "text-gray-400" : "text-gray-700"}`}
+                className={`truncate ${selectedOptions.length === 0 ? "text-gray-400 dark:text-gray-500" : "text-gray-700 dark:text-gray-200"}`}
               >
                 {getDisplayText()}
               </span>
             )}
           </div>
           <ChevronDown
-            className={`ml-2 h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ${
+            className={`ml-2 h-4 w-4 flex-shrink-0 text-gray-400 transition-transform dark:text-gray-500 ${
               isOpen ? "rotate-180 transform" : ""
             }`}
           />
@@ -405,7 +405,7 @@ export default function Select({
         {isOpen && (
           <div
             ref={dropdownRef}
-            className={`absolute z-[9999] w-full rounded-lg border border-gray-200 bg-white shadow-xl ${dropdownPositionClasses}`}
+            className={`absolute z-[9999] w-full rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800 ${dropdownPositionClasses}`}
             role="listbox"
             style={{
               zIndex: 9999,
@@ -413,18 +413,18 @@ export default function Select({
             }}
           >
             {searchable && (
-              <div className="sticky top-0 border-b border-gray-100 bg-white p-3 z-[10000]">
+              <div className="sticky top-0 z-[10000] border-b border-gray-100 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">
                 <div className="relative">
                   <input
                     type="text"
-                    className="w-full rounded-md border border-gray-200 px-3 py-2 pr-8 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+                    className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 pr-8 text-sm transition-all duration-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
                     placeholder={onSearch ? "Search..." : "Filter..."}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     autoFocus
                   />
                   {isSearching && (
-                    <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                    <Loader2 className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-gray-400 dark:text-gray-500" />
                   )}
                 </div>
               </div>
@@ -434,12 +434,12 @@ export default function Select({
               {isSearching ? (
                 <div className="px-3 py-8 text-center">
                   <Loader2 className="h-6 w-6 animate-spin text-primary-500 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">Searching...</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Searching...</p>
                 </div>
               ) : filteredOptions.length > 0 ? (
                 <>
                   {multiple && showSelectAll && (
-                    <div className="border-b border-gray-100">
+                    <div className="border-b border-gray-100 dark:border-gray-700">
                       <div className="px-3 py-2 flex items-center justify-between">
                         <button
                           type="button"
@@ -454,14 +454,14 @@ export default function Select({
                           <button
                             type="button"
                             onClick={handleClearAll}
-                            className="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                            className="text-sm font-medium text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                           >
                             Clear All
                           </button>
                         )}
                       </div>
                       {selectedOptions.length > 0 && (
-                        <div className="px-3 pb-2 text-xs text-gray-500">
+                        <div className="px-3 pb-2 text-xs text-gray-500 dark:text-gray-400">
                           {selectedOptions.length} selected
                           {maxSelected && ` of ${maxSelected} max`}
                         </div>
@@ -482,10 +482,10 @@ export default function Select({
                         className={`cursor-pointer px-3 py-2 flex items-center justify-between transition-colors duration-150 ${
                           isSelected
                             ? "bg-primary-50 text-primary-700"
-                            : "text-gray-700 hover:bg-gray-50"
+                            : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
                         } ${
                           isDisabled
-                            ? "cursor-not-allowed text-gray-400 hover:bg-white opacity-50"
+                            ? "cursor-not-allowed text-gray-400 opacity-50 hover:bg-white dark:text-gray-500 dark:hover:bg-gray-800"
                             : ""
                         }`}
                         onClick={() => !isDisabled && handleSelect(option)}
@@ -517,7 +517,7 @@ export default function Select({
                 </>
               ) : (
                 <div className="px-3 py-8 text-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {searchTerm ? "No results found" : "No options available"}
                   </p>
                 </div>
@@ -529,7 +529,7 @@ export default function Select({
 
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       {helpText && !error && (
-        <p className="mt-1 text-sm text-gray-500">{helpText}</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{helpText}</p>
       )}
 
       {name && (

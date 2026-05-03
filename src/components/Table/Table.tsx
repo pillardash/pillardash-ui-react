@@ -1,8 +1,14 @@
-import {ReactNode, useMemo, useState} from "react";
-import {ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, ChevronRight} from "lucide-react";
+import { ReactNode, useMemo, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
 import { Pagination } from "./Pagination";
-import {ExpandableTableProps, Column} from "./types";
+import { ExpandableTableProps, Column } from "./types";
 import { TableSkeleton } from "./TableSkeleton";
 import { EmptyStateCard } from "../Cards";
 import React from "react";
@@ -121,7 +127,9 @@ export default function Table<T>({
 
     const key = String(column.sortKey || column.value);
     if (sortKey !== key) {
-      return <ArrowUpDown size={14} className="text-gray-400 dark:text-gray-500" />;
+      return (
+        <ArrowUpDown size={14} className="text-gray-400 dark:text-gray-500" />
+      );
     }
 
     return sortOrder === "asc" ? (
@@ -191,8 +199,8 @@ export default function Table<T>({
                   key={colIndex}
                   className="flex justify-between items-center"
                 >
-                   <div className="h-4 w-1/3 rounded bg-gray-200 dark:bg-gray-700"></div>
-                   <div className="h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="h-4 w-1/3 rounded bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
                 </div>
               ))}
             </div>
@@ -204,15 +212,15 @@ export default function Table<T>({
             return (
               <div
                 key={rowIndex}
-                 className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+                className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
               >
                 <div
                   onClick={() => handleRowClick(item, rowIndex)}
-                   className={`p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:hover:border-gray-600 ${
+                  className={`p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:hover:border-gray-600 ${
                     onRowClick || expandableRows ? "cursor-pointer" : ""
                   } ${loading ? "opacity-50" : ""} ${
                     expandableRows
-                       ? "border-b border-gray-100 last:border-b-0 dark:border-gray-700"
+                      ? "border-b border-gray-100 last:border-b-0 dark:border-gray-700"
                       : ""
                   }`}
                 >
@@ -236,10 +244,10 @@ export default function Table<T>({
                         key={colIndex}
                         className="flex justify-between items-start"
                       >
-                         <span className="mr-3 flex-shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">
+                        <span className="mr-3 flex-shrink-0 text-sm font-medium text-gray-500 dark:text-gray-400">
                           {column.title}:
                         </span>
-                         <span className="text-right text-sm text-gray-800 dark:text-gray-100">
+                        <span className="text-right text-sm text-gray-800 dark:text-gray-100">
                           {typeof column.value === "function"
                             ? column.value(item)
                             : (item[column.value] as ReactNode)}
@@ -249,7 +257,7 @@ export default function Table<T>({
                   </div>
                 </div>
                 {expandableRows && expanded && expandedRowRender && (
-                   <div className="rounded-b-lg border-t border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50">
+                  <div className="rounded-b-lg border-t border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50">
                     {expandedRowRender(item)}
                   </div>
                 )}
@@ -271,7 +279,7 @@ export default function Table<T>({
         <thead>
           <tr>
             {expandableRows && (
-               <th className="w-12 rounded-bl-xl rounded-tl-xl bg-gray-100 px-6 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-800 dark:text-gray-300">
+              <th className="w-12 rounded-bl-xl rounded-tl-xl bg-gray-100 px-6 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-800 dark:text-gray-300">
                 {/* Toggle column */}
               </th>
             )}
@@ -279,11 +287,11 @@ export default function Table<T>({
               <th
                 key={index}
                 onClick={() => handleSort(column)}
-                 className={`bg-gray-100 px-6 py-3 text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-800 dark:text-gray-300 ${
+                className={`bg-gray-100 px-6 py-3 text-sm font-semibold tracking-wider text-gray-500 dark:bg-gray-800 dark:text-gray-300 ${
                   column.width || ""
                 } ${getAlignmentClass(column.align)} ${
                   column.sortable
-                     ? "cursor-pointer select-none hover:bg-gray-200 dark:hover:bg-gray-700"
+                    ? "cursor-pointer select-none hover:bg-gray-200 dark:hover:bg-gray-700"
                     : ""
                 } ${!expandableRows && index === 0 ? "rounded-bl-xl rounded-tl-xl" : ""} ${
                   index === columns.length - 1
@@ -301,7 +309,7 @@ export default function Table<T>({
           </tr>
         </thead>
         <tbody
-           className={`divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900 ${loading ? "opacity-50" : ""} ${
+          className={`divide-y divide-gray-200 dark:divide-gray-700  ${loading ? "opacity-50" : ""} ${
             onRowClick || expandableRows ? "cursor-pointer" : ""
           }`}
         >
@@ -318,22 +326,22 @@ export default function Table<T>({
                   <React.Fragment key={rowIndex}>
                     <tr
                       onClick={() => handleRowClick(item, rowIndex)}
-                       className={`transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-gray-800 ${
-                         expanded ? "bg-blue-50 dark:bg-blue-950/40" : ""
-                       }`}
+                      className={`transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                        expanded ? "bg-blue-50 dark:bg-blue-950/40" : ""
+                      }`}
                     >
                       {expandableRows && (
-                         <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-100">
+                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-100">
                           <div className="flex items-center justify-center">
                             {expanded ? (
                               <ChevronDown
                                 size={16}
-                                 className="text-gray-500 dark:text-gray-400"
+                                className="text-gray-500 dark:text-gray-400"
                               />
                             ) : (
                               <ChevronRight
                                 size={16}
-                                 className="text-gray-500 dark:text-gray-400"
+                                className="text-gray-500 dark:text-gray-400"
                               />
                             )}
                           </div>
@@ -342,7 +350,7 @@ export default function Table<T>({
                       {columns.map((column, colIndex) => (
                         <td
                           key={colIndex}
-                           className={`whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-100 ${getAlignmentClass(
+                          className={`whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-100 ${getAlignmentClass(
                             column.align,
                           )} ${column.className || ""}`}
                           style={
@@ -356,7 +364,10 @@ export default function Table<T>({
                       ))}
                     </tr>
                     {expandableRows && expanded && expandedRowRender && (
-                       <tr key={`${rowIndex}-expanded`} className="bg-gray-50 dark:bg-gray-900/50">
+                      <tr
+                        key={`${rowIndex}-expanded`}
+                        className="bg-gray-50 dark:bg-gray-900/50"
+                      >
                         <td colSpan={columns.length + 1} className="px-6 py-4">
                           <div className="animate-fade-in">
                             {expandedRowRender(item)}

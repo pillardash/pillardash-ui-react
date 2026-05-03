@@ -27,10 +27,10 @@ export default function Search({
                 value={query}
                 onChange={handleSearch}
                 placeholder={placeholder}
-                className='w-full rounded-lg border border-gray-200 bg-white py-2 pl-8 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary'
+                className='w-full rounded-lg border border-gray-200 bg-white py-2 pl-8 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500'
             />
             <svg
-                className='absolute left-2 top-1/2 -translate-y-1/2 transform text-gray-400'
+                className='absolute left-2 top-1/2 -translate-y-1/2 transform text-gray-400 dark:text-gray-500'
                 width='16'
                 height='16'
                 viewBox='0 0 24 24'

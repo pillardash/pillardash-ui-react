@@ -56,7 +56,7 @@ export default function SelectButton({
       {label && (
         <label
           htmlFor={id}
-          className="mb-1 block text-sm font-medium text-gray-700"
+          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
           {label}
           {required && <span className="ml-1 text-red-500">*</span>}
@@ -64,9 +64,9 @@ export default function SelectButton({
       )}
       <button
         type="button"
-        className={`flex w-full items-center justify-between rounded-md border border-gray-200 bg-white shadow-sm ${
+        className={`flex w-full items-center justify-between rounded-md border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 ${
           sizeClasses[size]
-        } text-gray-700 hover:bg-gray-50 focus:outline-none ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+        } text-gray-700 hover:bg-gray-50 focus:outline-none dark:text-gray-200 dark:hover:bg-gray-700 ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         id={id}
@@ -81,14 +81,14 @@ export default function SelectButton({
         />
       </button>
       {isOpen && (
-        <div className="absolute z-10 mt-1 max-h-60 w-full min-w-[200px] p-1 font-medium text-sm overflow-auto rounded-lg bg-white shadow-xl">
+        <div className="absolute z-10 mt-1 max-h-60 w-full min-w-[200px] overflow-auto rounded-lg bg-white p-1 text-sm font-medium shadow-xl dark:bg-gray-800 dark:ring-1 dark:ring-gray-700">
           {options.map((option) => (
             <div
               key={option.value}
               className={`cursor-pointer px-3 py-2 hover:bg-gray-100 rounded-lg flex justify-between item-center ${
                 selectedOption?.value === option.value
-                  ? "bg-gray-50 text-black"
-                  : "text-gray-900"
+                  ? "bg-gray-50 text-black dark:bg-gray-700 dark:text-white"
+                  : "text-gray-900 dark:text-gray-200"
               }`}
               onClick={() => handleSelect(option)}
             >

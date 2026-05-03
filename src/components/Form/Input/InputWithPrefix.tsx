@@ -92,8 +92,8 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
 
     const baseInputClasses = `
         flex-1 rounded-none rounded-r-[12px] border-l-0 ${sizeClasses[size]} 
-        ${error ? "border-red-500" : "border-gray-200"}
-        ${disabled ? "bg-gray-100 text-gray-500 placeholder-gray-300" : "bg-gray-100 placeholder-gray-400 text-dark"}
+        ${error ? "border-red-500" : "border-gray-200 dark:border-gray-700"}
+        ${disabled ? "bg-gray-100 text-gray-500 placeholder-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:placeholder-gray-600" : "bg-gray-100 placeholder-gray-400 text-dark dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"}
         focus:outline-none
         ${getIconPadding()}
         ${className}
@@ -101,8 +101,8 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
 
     const prefixClasses = `
         flex items-center rounded-l-[12px] border border-r-0 ${prefixSizeClasses[size]}
-        ${error ? "border-red-500" : "border-gray-200"}
-        ${disabled ? "bg-gray-50" : ""}
+        ${error ? "border-red-500" : "border-gray-200 dark:border-gray-700"}
+        ${disabled ? "bg-gray-50 dark:bg-gray-800" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"}
         ${prefixClassName}
     `;
 
@@ -120,7 +120,7 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
     return (
         <div className='mb-4'>
             {label && (
-                <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-600'>
+                <label htmlFor={id} className='mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300'>
                     {label}
                     {required && <span className='ml-1 text-red-500'>*</span>}
                 </label>
@@ -166,7 +166,7 @@ const InputWithPrefix: React.FC<InputWithPrefixProps> = ({
             </div>
 
             {helpText && !error && (
-                <p id={`${id}-help`} className="mt-1 text-sm text-gray-500">
+                <p id={`${id}-help`} className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {helpText}
                 </p>
             )}

@@ -148,7 +148,7 @@ const TagInput: React.FC<TagInputProps> = ({
     return (
         <div className="mb-4">
             {label && (
-                <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray-600">
+                <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
                     {label}
                     {required && <span className="ml-1 text-red-500">*</span>}
                 </label>
@@ -157,11 +157,11 @@ const TagInput: React.FC<TagInputProps> = ({
             <div className="relative" ref={dropdownRef}>
                 <div
                     className={`w-full rounded-[12px] border ${
-                        error ? "border-red-500" : "border-gray-200"
+                        error ? "border-red-500" : "border-gray-200 dark:border-gray-700"
                     } ${
                         disabled
-                            ? "bg-gray-100 text-gray-500"
-                            : "bg-gray-100 text-dark"
+                            ? "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
+                            : "bg-gray-100 text-dark dark:bg-gray-800 dark:text-gray-100"
                     } focus-within:outline-none focus-within:ring-1 focus-within:ring-primary ${className} ${sizeClasses[size]} flex flex-wrap items-center gap-1`}
                 >
                     {/* Render selected tags */}
@@ -200,7 +200,7 @@ const TagInput: React.FC<TagInputProps> = ({
                         onFocus={handleInputFocus}
                         placeholder={value.length === 0 ? placeholder : ""}
                         disabled={disabled || (maxTags && value.length >= maxTags) as boolean}
-                        className="flex-1 border-none bg-transparent outline-none placeholder-gray-400 min-w-[120px]"
+                        className="min-w-[120px] flex-1 border-none bg-transparent outline-none placeholder-gray-400 dark:placeholder-gray-500"
                         aria-invalid={!!error}
                         aria-describedby={error ? `${value}-error` : helpText ? `${value}-help` : undefined}
                     />
@@ -208,7 +208,7 @@ const TagInput: React.FC<TagInputProps> = ({
 
                 {/* Dropdown */}
                 {isDropdownOpen && !disabled && (filteredTags.length > 0 || (inputValue && allowCustomTags)) && (
-                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-[12px] shadow-lg backdrop-blur-sm bg-white/95 max-h-60 overflow-auto p-4">
+                    <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-[12px] border border-gray-200 bg-white/95 p-4 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/95">
                         {/* Predefined tags */}
                         {filteredTags.length > 0 && (
                             <div className="flex flex-wrap gap-2 mb-3">
@@ -217,7 +217,7 @@ const TagInput: React.FC<TagInputProps> = ({
                                         key={tag.value}
                                         type="button"
                                         onClick={() => selectPredefinedTag(tag)}
-                                        className={`inline-flex items-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200 ${tagSizeClasses[size]} font-medium`}
+                                        className={`inline-flex items-center rounded-full bg-gray-200 text-gray-700 transition-colors duration-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 ${tagSizeClasses[size]} font-medium`}
                                     >
                                         {tag.label}
                                     </button>
@@ -231,8 +231,8 @@ const TagInput: React.FC<TagInputProps> = ({
                         ) && (
                             <>
                                 {filteredTags.length > 0 && (
-                                    <div className="border-t border-gray-100 pt-3 mb-2">
-                                        <span className="text-xs text-gray-500 font-medium">CREATE NEW TAG</span>
+                                    <div className="mb-2 border-t border-gray-100 pt-3 dark:border-gray-700">
+                                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400">CREATE NEW TAG</span>
                                     </div>
                                 )}
                                 <div className="flex flex-wrap gap-2">
@@ -252,7 +252,7 @@ const TagInput: React.FC<TagInputProps> = ({
 
                         {/* Empty state */}
                         {filteredTags.length === 0 && (!inputValue || !allowCustomTags) && (
-                            <div className="text-center py-4 text-gray-500 text-sm">
+                            <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                 No matching tags found
                             </div>
                         )}
@@ -261,13 +261,13 @@ const TagInput: React.FC<TagInputProps> = ({
             </div>
 
             {maxTags && (
-                <div className="mt-1 text-xs text-gray-500">
+                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     {value.length}/{maxTags} tags
                 </div>
             )}
 
             {helpText && !error && (
-                <p id={`${value}-help`} className="mt-1 text-sm text-gray-500">
+                <p id={`${value}-help`} className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     {helpText}
                 </p>
             )}
