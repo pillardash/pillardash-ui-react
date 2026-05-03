@@ -54,7 +54,7 @@ export const PresetMinimal: Story = {
         return (
             <div className="max-w-3xl">
                 <TextEditor onUpdate={setContent} toolbarPreset="minimal" />
-                <p className="mt-3 text-xs text-gray-500">Minimal preset: history + formatting + link.</p>
+                <p className="mt-3 text-xs text-gray-500">Minimal preset: history + formatting + lists + link.</p>
             </div>
         );
     },

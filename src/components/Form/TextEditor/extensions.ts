@@ -57,7 +57,7 @@ export const toolbarPresetFeatures: Record<ToolbarPreset, Required<TextEditorFea
     minimal: {
         heading: false,
         formatting: true,
-        lists: false,
+        lists: true,
         code: false,
         quote: false,
         link: true,
