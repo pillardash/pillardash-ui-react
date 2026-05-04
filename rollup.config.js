@@ -40,10 +40,12 @@ const sharedPlugins = [
   terser(),
 ];
 
+const jsInputs = ["src/index.ts", "src/text-editor.ts"];
+
 export default [
   // CJS output
   {
-    input: "src/index.ts",
+    input: jsInputs,
     output: {
       dir: "dist/cjs",
       format: "cjs",
@@ -56,7 +58,7 @@ export default [
     external: ["react", "react-dom"],
   },
   {
-    input: "src/index.ts",
+    input: jsInputs,
     output: {
       dir: "dist/esm",
       format: "esm",
@@ -72,6 +74,12 @@ export default [
   {
     input: "src/index.ts",
     output: [{ file: "dist/index.d.ts" }],
+    plugins: [dts.default()],
+    external: [/\.css$/],
+  },
+  {
+    input: "src/text-editor.ts",
+    output: [{ file: "dist/text-editor.d.ts" }],
     plugins: [dts.default()],
     external: [/\.css$/],
   },

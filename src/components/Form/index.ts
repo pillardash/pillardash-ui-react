@@ -22,8 +22,5 @@ export type { SearchProps } from './Search/Search';
 export { default as Select } from './Select/Select';
 export type { SelectProps, SelectOption } from './Select/Select';
 
-export { default as TextEditor } from './TextEditor/TextEditor';
-export type { TextEditorProps } from './TextEditor/TextEditor';
-
 export { default as SelectButton } from './Select/SelectButton';
 export type { SelectButtonProps, SelectButtonOption } from './Select/SelectButton';
