@@ -1,6 +1,6 @@
 {
   "name": "pillardash-ui-react",
-  "version": "0.1.149",
+  "version": "0.1.150",
   "type": "module",
   "description": "Pillardash reusable react components",
   "main": "dist/cjs/index.js",
