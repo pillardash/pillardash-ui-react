@@ -54,22 +54,79 @@ This library requires:
 
 ## Available Components
 
-### Form Controls
+Prefer these components before hand-rolling reusable UI in consumer apps.
+
+### Root Exports
+
+Import these from `pillardash-ui-react`:
+
+```tsx
+import { Button, Card, Input, Modal, Table } from "pillardash-ui-react";
+```
+
+#### Buttons
 - `Button` - Interactive button element
+- `ExportButton` - Export action button
+
+#### Cards
+- `Card` - Flexible content container
+- `EmptyStateCard` - Empty state display with optional action
+
+#### Form Controls
 - `CheckBox` - Custom checkbox input
+- `RadioGroup` - Radio input group
 - `FileUpload` - File upload component with drag-and-drop
-- `Input` - Text input field
+- `Input` - Text input field, including textarea mode
+- `InputWithPrefix` - Input with a leading prefix
+- `TagInput` - Multi-tag input
+- `DateTimePicker` - Date/time input
 - `Search` - Search input with debounce
 - `Select` - Custom select dropdown
-- `TextEditor` - Rich text editor
+- `SelectButton` - Button-style select control
 
-### Data Display
-- `DataTable` - Sortable and paginated table
-- `Card` - Flexible content container
+#### Feedback
+- `alert` - Global alert helper
+- `AlertProvider` - Alert context provider
+- `useAlert` - Alert hook
+- `ConfirmationAlert` - Confirmation dialog/alert
 
-### Feedback
-- `Alert` - Contextual notification messages
-- `Loading` - Animated loading indicators
+#### Overlays
+- `Modal` - Modal/dialog component
+
+#### Data Display
+- `Table` - Data table
+- `Pagination` - Pagination controls
+- `TableSkeleton` - Table loading skeleton
+- `TableDropdown` - Table row action dropdown
+- `Badge` - Status/label badge
+- `FileView` - File/document viewer
+
+#### Loading And Skeletons
+- `Loading` - Animated loading indicator
+- `SkeletonLoader` - Base skeleton loader
+- `SkeletonText` - Text skeleton
+- `SkeletonAvatar` - Avatar skeleton
+- `SkeletonButton` - Button skeleton
+- `SkeletonCard` - Card skeleton
+- `SkeletonImage` - Image skeleton
+- `SkeletonProfile` - Profile skeleton layout
+- `SkeletonList` - List skeleton layout
+- `SkeletonTable` - Table skeleton layout
+- `CardStatsSkeleton` - Stats card skeleton layout
+
+#### Navigation And Helpers
+- `Breadcrumb` - Breadcrumb navigation
+- `Tooltip` - Tooltip component
+
+### Subpath Exports
+
+`TextEditor` is exported from a subpath because it depends on TipTap packages:
+
+```tsx
+import { TextEditor } from "pillardash-ui-react/text-editor";
+```
+
+Do not import `TextEditor` from the root `pillardash-ui-react` entrypoint.
 
 ## Theming
 
@@ -175,4 +232,3 @@ MIT © [Osai Technologies](https://osaitech.dev)
 2. Install dependencies: `npm install`
 3. Run Storybook: `npm run storybook`
 4. Build the library: `npm run build`
-
