@@ -1,5 +1,5 @@
 import React from "react";
-import { Heading1, Heading2, Heading3, SeparatorVertical } from "lucide-react";
+import { SeparatorVertical } from "lucide-react";
 
 export type HeadingLevel = 0 | 1 | 2 | 3;
 
@@ -20,7 +20,7 @@ export const ToolbarButton: React.FC<{
 }) => (
   <button
     onClick={onClick}
-    className={`p-2 rounded transition-colors ${active ? "bg-blue-200 text-blue-800" : "hover:bg-gray-200"} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+    className={`rounded p-2 transition-colors ${active ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" : "hover:bg-gray-200 dark:hover:bg-gray-800"} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
     type="button"
     disabled={disabled}
     title={title}
@@ -32,7 +32,7 @@ export const ToolbarButton: React.FC<{
 );
 
 export const ToolbarDivider = () => (
-  <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300" />
+  <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300 dark:bg-gray-700" />
 );
 
 export const HeadingSelect: React.FC<{
@@ -41,7 +41,7 @@ export const HeadingSelect: React.FC<{
 }> = ({ value, onChange }) => (
   <div className="flex items-center gap-2">
     <select
-      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm"
+      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
       aria-label="Heading level"
       value={value}
       onChange={(e) => onChange(Number(e.target.value) as HeadingLevel)}
@@ -57,8 +57,5 @@ export const HeadingSelect: React.FC<{
         Heading 3
       </option>
     </select>
-    {/*<Heading1 size={14} className="text-gray-500" />
-        <Heading2 size={14} className="text-gray-500" />
-        <Heading3 size={14} className="text-gray-500" />*/}
   </div>
 );

@@ -72,7 +72,7 @@ const ImagePopover: React.FC<ImagePopoverProps> = ({ editor, onImageUpload }) =>
 
             if (onImageUpload) {
                 const uploaded = await onImageUpload(file);
-                imageSrc = uploaded.url;
+                imageSrc = typeof uploaded.url === "string" ? uploaded.url.trim() : "";
             } else {
                 imageSrc = await new Promise<string>((resolve, reject) => {
                     const reader = new FileReader();
@@ -86,6 +86,10 @@ const ImagePopover: React.FC<ImagePopoverProps> = ({ editor, onImageUpload }) =>
                     reader.onerror = () => reject(reader.error ?? new Error("Failed to read file"));
                     reader.readAsDataURL(file);
                 });
+            }
+
+            if (!imageSrc) {
+                return;
             }
 
             editor.chain().focus().setImage({ src: imageSrc, alt: alt.trim() || file.name }).run();
@@ -108,31 +112,31 @@ const ImagePopover: React.FC<ImagePopoverProps> = ({ editor, onImageUpload }) =>
             </ToolbarButton>
 
             {isOpen && (
-                <div className="absolute left-1/2 z-10 mt-2 w-72 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
-                    <label className="mb-1 block text-xs font-medium text-gray-600">Image URL</label>
+                <div className="absolute left-1/2 z-10 mt-2 w-72 -translate-x-1/2 rounded-lg border border-gray-200 bg-white p-3 text-gray-700 shadow-lg dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
+                    <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">Image URL</label>
                     <input
-                        className="mb-2 w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                        className="mb-2 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                         value={src}
                         onChange={(e) => setSrc(e.target.value)}
                         placeholder="https://example.com/image.jpg"
                     />
-                    <label className="mb-1 block text-xs font-medium text-gray-600">Alt text</label>
+                    <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">Alt text</label>
                     <input
-                        className="mb-3 w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                        className="mb-3 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                         value={alt}
                         onChange={(e) => setAlt(e.target.value)}
                         placeholder="Describe the image"
                     />
-                    <label className="mb-1 block text-xs font-medium text-gray-600">Upload image</label>
+                    <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">Upload image</label>
                     <input
-                        className="mb-3 block w-full text-sm text-gray-700 file:mr-3 file:rounded file:border-0 file:bg-gray-100 file:px-3 file:py-1 file:text-sm file:hover:bg-gray-200"
+                        className="mb-3 block w-full text-sm text-gray-700 file:mr-3 file:rounded file:border-0 file:bg-gray-100 file:px-3 file:py-1 file:text-sm file:text-gray-700 file:hover:bg-gray-200 dark:text-gray-300 dark:file:bg-gray-800 dark:file:text-gray-200 dark:file:hover:bg-gray-700"
                         type="file"
                         accept="image/*"
                         onChange={handleFileUpload}
                         disabled={isUploading}
                     />
                     <div className="flex gap-2">
-                        <button type="button" className="rounded bg-gray-100 px-3 py-1 text-sm hover:bg-gray-200" onClick={() => setIsOpen(false)}>Cancel</button>
+                        <button type="button" className="rounded bg-gray-100 px-3 py-1 text-sm hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700" onClick={() => setIsOpen(false)}>Cancel</button>
                         <button type="button" className="ml-auto rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50" onClick={applyImage} disabled={isUploading}>{isUploading ? "Uploading..." : "Insert"}</button>
                     </div>
                 </div>

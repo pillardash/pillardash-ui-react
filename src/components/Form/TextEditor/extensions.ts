@@ -8,6 +8,7 @@ import Italic from "@tiptap/extension-italic";
 import Link from "@tiptap/extension-link";
 import ListItem from "@tiptap/extension-list-item";
 import OrderedList from "@tiptap/extension-ordered-list";
+import Placeholder from "@tiptap/extension-placeholder";
 import Strike from "@tiptap/extension-strike";
 import { Table } from "@tiptap/extension-table";
 import TableCell from "@tiptap/extension-table-cell";
@@ -17,6 +18,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
+import { Markdown } from "@tiptap/markdown";
 import StarterKit from "@tiptap/starter-kit";
 
 export interface TextEditorFeatures {
@@ -36,6 +38,8 @@ export interface TextEditorFeatures {
 }
 
 export type ToolbarPreset = "minimal" | "standard" | "full";
+
+export type TextEditorContentFormat = "html" | "markdown";
 
 export const defaultTextEditorFeatures: Required<TextEditorFeatures> = {
     heading: true,
@@ -87,8 +91,12 @@ export const withDefaultFeatures = (features?: TextEditorFeatures): Required<Tex
     ...features,
 });
 
-export const createTextEditorExtensions = (features?: TextEditorFeatures) => {
+export const createTextEditorExtensions = (
+    features?: TextEditorFeatures,
+    options?: { contentFormat?: TextEditorContentFormat; placeholder?: string },
+) => {
     const f = withDefaultFeatures(features);
+    const contentFormat = options?.contentFormat ?? "html";
 
     return [
         StarterKit.configure({
@@ -104,7 +112,7 @@ export const createTextEditorExtensions = (features?: TextEditorFeatures) => {
                   Code,
                   CodeBlock.configure({
                       HTMLAttributes: {
-                          class: "bg-gray-100 p-3 rounded text-sm font-mono",
+                          class: "rounded bg-gray-100 p-3 font-mono text-sm dark:bg-gray-800",
                       },
                   }),
               ]
@@ -117,7 +125,7 @@ export const createTextEditorExtensions = (features?: TextEditorFeatures) => {
                   Link.configure({
                       openOnClick: false,
                       HTMLAttributes: {
-                          class: "text-blue-600 underline",
+                          class: "text-blue-600 underline dark:text-blue-400",
                       },
                   }),
               ]
@@ -132,8 +140,16 @@ export const createTextEditorExtensions = (features?: TextEditorFeatures) => {
                   TableCell,
               ]
             : []),
+        ...(f.placeholder
+            ? [
+                  Placeholder.configure({
+                      placeholder: options?.placeholder ?? "Start writing...",
+                  }),
+              ]
+            : []),
+        ...(contentFormat === "markdown" ? [Markdown] : []),
     ];
 };
 
 export const editorContentClassName =
-    "prose prose-sm max-w-none prose-h1:text-3xl prose-h1:font-bold prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-semibold mx-auto focus:outline-none min-h-[200px] p-4";
+    "prose prose-sm max-w-none prose-h1:text-3xl prose-h1:font-bold prose-h2:text-2xl prose-h2:font-semibold prose-h3:text-xl prose-h3:font-semibold prose-a:text-blue-600 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none mx-auto min-h-[200px] p-4 focus:outline-none dark:prose-invert dark:prose-a:text-blue-400 dark:prose-code:bg-gray-800";

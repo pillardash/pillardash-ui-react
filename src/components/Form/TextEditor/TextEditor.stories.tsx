@@ -10,7 +10,7 @@ const meta: Meta<typeof TextEditor> = {
         layout: 'padded',
         docs: {
             description: {
-                component: 'A modular TipTap editor with feature flags, toolbar presets, sticky/floating toolbar modes, heading controls, formatting, lists, code, quote, link/image popovers, optional slash commands, and pluggable image upload callback.',
+                component: 'A modular TipTap editor with feature flags, toolbar presets, sticky/floating toolbar modes, dark-mode support, optional markdown input/output, heading controls, formatting, lists, code, quote, link/image popovers, optional slash commands, and pluggable image upload callback.',
             },
         },
     },
@@ -22,6 +22,13 @@ const meta: Meta<typeof TextEditor> = {
         },
         stickyToolbar: {
             control: 'boolean',
+        },
+        contentFormat: {
+            control: 'select',
+            options: ['html', 'markdown'],
+        },
+        placeholder: {
+            control: 'text',
         },
     },
 };
@@ -37,8 +44,8 @@ export const Default: Story = {
                 <TextEditor onUpdate={setContent} />
                 {content && (
                     <details className="mt-4">
-                        <summary className="cursor-pointer text-sm text-gray-500">View HTML output</summary>
-                        <pre className="mt-2 overflow-auto rounded bg-gray-50 p-3 text-xs text-gray-700">
+                        <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400">View HTML output</summary>
+                        <pre className="mt-2 overflow-auto rounded bg-gray-50 p-3 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-200">
                             {content}
                         </pre>
                     </details>
@@ -54,7 +61,7 @@ export const PresetMinimal: Story = {
         return (
             <div className="max-w-3xl">
                 <TextEditor onUpdate={setContent} toolbarPreset="minimal" />
-                <p className="mt-3 text-xs text-gray-500">Minimal preset: history + formatting + lists + link.</p>
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Minimal preset: history + formatting + lists + link.</p>
             </div>
         );
     },
@@ -66,7 +73,7 @@ export const PresetFullWithSlash: Story = {
         return (
             <div className="max-w-3xl">
                 <TextEditor onUpdate={setContent} toolbarPreset="full" features={{ slashCommand: true }} />
-                <p className="mt-3 text-xs text-gray-500">Type / inside the editor to open slash commands.</p>
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Type / inside the editor to open slash commands.</p>
             </div>
         );
     },
@@ -88,11 +95,11 @@ export const FullPresetRichBlocks: Story = {
                     onUpdate={setContent}
                     toolbarPreset="full"
                 />
-                <p className="mt-3 text-xs text-gray-500">Full preset includes table, image, task list, and slash command support.</p>
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Full preset includes table, image, task list, and slash command support.</p>
                 {content && (
                     <details className="mt-4">
-                        <summary className="cursor-pointer text-sm text-gray-500">View HTML output</summary>
-                        <pre className="mt-2 max-h-72 overflow-auto rounded bg-gray-50 p-3 text-xs text-gray-700">
+                        <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400">View HTML output</summary>
+                        <pre className="mt-2 max-h-72 overflow-auto rounded bg-gray-50 p-3 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-200">
                             {content}
                         </pre>
                     </details>
@@ -117,7 +124,7 @@ export const RemoteImageUploadFlow: Story = {
                         };
                     }}
                 />
-                <p className="mt-3 text-xs text-gray-500">Demo uses mocked remote upload callback; replace with your backend API uploader.</p>
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Demo uses mocked remote upload callback; replace with your backend API uploader.</p>
             </div>
         );
     },
@@ -135,7 +142,7 @@ export const BubbleToolbarMode: Story = {
                     stickyToolbar={false}
                     toolbarPreset="standard"
                 />
-                <p className="mt-3 text-xs text-gray-500">Select text to reveal floating tools.</p>
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Select text to reveal floating tools.</p>
             </div>
         );
     },
@@ -162,7 +169,7 @@ export const FeatureFlags: Story = {
                         taskList: true,
                     }}
                 />
-                <p className="mt-3 text-xs text-gray-500">Feature flags demo: lists/quote disabled, tables/images/tasks enabled.</p>
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Feature flags demo: lists/quote disabled, tables/images/tasks enabled.</p>
             </div>
         );
     },
@@ -188,7 +195,7 @@ export const TablesOnlyWorkflow: Story = {
                         taskList: false,
                     }}
                 />
-                <p className="mt-3 text-xs text-gray-500">Focused table workflow: use the single table dropdown for all table actions.</p>
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Focused table workflow: use the single table dropdown for all table actions.</p>
             </div>
         );
     },
@@ -218,7 +225,7 @@ export const TableWorkflow: Story = {
                         taskList: false,
                     }}
                 />
-                <ol className="mt-3 list-decimal space-y-1 pl-5 text-xs text-gray-500">
+                <ol className="mt-3 list-decimal space-y-1 pl-5 text-xs text-gray-500 dark:text-gray-400">
                     <li>Click the table button to open table actions.</li>
                     <li>Click Insert table.</li>
                     <li>Click inside a cell, then use add/delete row or column.</li>
@@ -244,8 +251,64 @@ export const WithInitialContent: Story = {
         `;
         return (
             <div className="max-w-3xl">
-                <label className="mb-2 block text-sm font-medium text-gray-700">Assignment Description</label>
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Assignment Description</label>
                 <TextEditor initialContent={initialContent} onUpdate={setContent} />
+            </div>
+        );
+    },
+};
+
+export const MarkdownMode: Story = {
+    render: () => {
+        const [content, setContent] = useState('');
+        const initialContent = `# Markdown Notice\n\nWrite **rich content** and store it as markdown.\n\n- Bullet item\n- Another item\n\n> Quotes, links, and code blocks serialize back to markdown.\n\n\`inline code\``;
+
+        return (
+            <div className="max-w-3xl">
+                <TextEditor
+                    initialContent={initialContent}
+                    onUpdate={setContent}
+                    contentFormat="markdown"
+                    toolbarPreset="standard"
+                />
+                <details className="mt-4" open>
+                    <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400">View markdown output</summary>
+                    <pre className="mt-2 max-h-72 overflow-auto rounded bg-gray-50 p-3 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                        {content || initialContent}
+                    </pre>
+                </details>
+            </div>
+        );
+    },
+};
+
+export const DarkMode: Story = {
+    render: () => {
+        const [content, setContent] = useState('');
+        const initialContent = `
+            <h2>Dark Mode Editor</h2>
+            <p>The editor shell, toolbar, popovers, prose content, tables, and form controls adapt inside a <code>.dark</code> container.</p>
+            <blockquote>Select text to test the floating toolbar story separately.</blockquote>
+        `;
+
+        return (
+            <div className="dark rounded-xl bg-gray-950 p-6">
+                <div className="max-w-4xl">
+                    <TextEditor
+                        initialContent={initialContent}
+                        onUpdate={setContent}
+                        toolbarPreset="full"
+                    />
+                    <p className="mt-3 text-xs text-gray-400">Dark mode preview with the full toolbar preset.</p>
+                    {content && (
+                        <details className="mt-4">
+                            <summary className="cursor-pointer text-sm text-gray-400">View HTML output</summary>
+                            <pre className="mt-2 max-h-72 overflow-auto rounded bg-gray-900 p-3 text-xs text-gray-200">
+                                {content}
+                            </pre>
+                        </details>
+                    )}
+                </div>
             </div>
         );
     },
@@ -258,16 +321,16 @@ export const InForm: Story = {
         return (
             <div className="max-w-3xl space-y-4">
                 <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">Notice Title</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Notice Title</label>
                     <input
-                        className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                         placeholder="Enter notice title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
                 </div>
                 <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">Notice Content</label>
+                    <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Notice Content</label>
                     <TextEditor onUpdate={setBody} />
                 </div>
                 <button
