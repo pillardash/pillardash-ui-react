@@ -30,6 +30,9 @@ const meta: Meta<typeof TextEditor> = {
         placeholder: {
             control: 'text',
         },
+        showCounts: {
+            control: 'boolean',
+        },
     },
 };
 
@@ -50,6 +53,28 @@ export const Default: Story = {
                         </pre>
                     </details>
                 )}
+            </div>
+        );
+    },
+};
+
+export const SleekDefault: Story = {
+    render: () => {
+        const [content, setContent] = useState('');
+        return (
+            <div className="bg-[#f6f3ff] p-8 dark:bg-gray-950">
+                <div className="mx-auto max-w-4xl">
+                    <TextEditor
+                        onUpdate={setContent}
+                        placeholder="Start writing your resource content here..."
+                        status="Auto-saved"
+                    />
+                    {content && (
+                        <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                            Current output length: {content.length} characters.
+                        </p>
+                    )}
+                </div>
             </div>
         );
     },
@@ -94,6 +119,7 @@ export const FullPresetRichBlocks: Story = {
                     initialContent={initialContent}
                     onUpdate={setContent}
                     toolbarPreset="full"
+                    status="Auto-saved"
                 />
                 <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">Full preset includes table, image, task list, and slash command support.</p>
                 {content && (
@@ -270,6 +296,7 @@ export const MarkdownMode: Story = {
                     onUpdate={setContent}
                     contentFormat="markdown"
                     toolbarPreset="standard"
+                    status="Markdown"
                 />
                 <details className="mt-4" open>
                     <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400">View markdown output</summary>
@@ -298,6 +325,7 @@ export const DarkMode: Story = {
                         initialContent={initialContent}
                         onUpdate={setContent}
                         toolbarPreset="full"
+                        status="Auto-saved"
                     />
                     <p className="mt-3 text-xs text-gray-400">Dark mode preview with the full toolbar preset.</p>
                     {content && (

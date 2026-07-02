@@ -10,6 +10,7 @@ export const ToolbarButton: React.FC<{
   title: string;
   children: React.ReactNode;
   ariaPressed?: boolean;
+  className?: string;
 }> = ({
   onClick,
   active = false,
@@ -17,10 +18,11 @@ export const ToolbarButton: React.FC<{
   title,
   children,
   ariaPressed,
+  className = "",
 }) => (
   <button
     onClick={onClick}
-    className={`rounded p-2 transition-colors ${active ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" : "hover:bg-gray-200 dark:hover:bg-gray-800"} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+    className={`inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-1 focus:ring-offset-white dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:focus:ring-offset-gray-950 ${active ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300" : ""} ${disabled ? "cursor-not-allowed opacity-40 hover:bg-transparent" : ""} ${className}`.trim()}
     type="button"
     disabled={disabled}
     title={title}
@@ -32,7 +34,7 @@ export const ToolbarButton: React.FC<{
 );
 
 export const ToolbarDivider = () => (
-  <SeparatorVertical className="mx-2 h-6 w-px bg-gray-300 dark:bg-gray-700" />
+  <SeparatorVertical className="mx-1 h-5 w-px bg-gray-200 text-transparent dark:bg-gray-800" />
 );
 
 export const HeadingSelect: React.FC<{
@@ -41,7 +43,7 @@ export const HeadingSelect: React.FC<{
 }> = ({ value, onChange }) => (
   <div className="flex items-center gap-2">
     <select
-      className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+      className="h-8 rounded-md border-0 bg-transparent px-2 text-sm font-medium text-gray-700 outline-none transition-colors hover:bg-gray-100 focus:ring-2 focus:ring-primary-500/30 dark:text-gray-200 dark:hover:bg-gray-800"
       aria-label="Heading level"
       value={value}
       onChange={(e) => onChange(Number(e.target.value) as HeadingLevel)}

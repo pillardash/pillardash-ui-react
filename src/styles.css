@@ -20,16 +20,26 @@
 
 @layer components {
   .pd-text-editor .ProseMirror table {
-    @apply w-full border-collapse;
+    @apply my-4 w-full overflow-hidden rounded-xl border border-gray-200 text-sm dark:border-gray-700;
+    border-collapse: separate;
+    border-spacing: 0;
   }
 
   .pd-text-editor .ProseMirror th,
   .pd-text-editor .ProseMirror td {
-    @apply border border-gray-300 px-3 py-2 align-top dark:border-gray-700;
+    @apply border-0 border-b border-r border-gray-200 px-3 py-2 align-top last:border-r-0 dark:border-gray-700;
   }
 
   .pd-text-editor .ProseMirror th {
-    @apply bg-gray-100 font-semibold dark:bg-gray-800;
+    @apply bg-gray-50 font-semibold text-gray-700 dark:bg-gray-900 dark:text-gray-200;
+  }
+
+  .pd-text-editor .ProseMirror tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .pd-text-editor .ProseMirror .selectedCell {
+    @apply bg-primary-50 outline outline-2 outline-primary-400 dark:bg-primary-900/30;
   }
 
   .pd-text-editor .ProseMirror p.is-editor-empty:first-child::before {
