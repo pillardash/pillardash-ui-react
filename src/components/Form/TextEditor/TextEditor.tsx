@@ -76,7 +76,22 @@ const TextEditor: React.FC<TextEditorProps> = ({
         ...toolbarPresetFeatures[toolbarPreset],
         ...features,
       }),
-    [features, toolbarPreset],
+    [
+      features?.heading,
+      features?.formatting,
+      features?.lists,
+      features?.code,
+      features?.quote,
+      features?.link,
+      features?.history,
+      features?.placeholder,
+      features?.slashCommand,
+      features?.table,
+      features?.image,
+      features?.taskList,
+      features?.alignment,
+      toolbarPreset,
+    ],
   );
   const [slashOpen, setSlashOpen] = React.useState(false);
   const [bubblePos, setBubblePos] = React.useState<{
@@ -144,6 +159,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   React.useEffect(() => {
     if (!editor) return;
     const updateCounts = () => {
+      if (editor.isDestroyed) return;
       setCounts(getTextEditorCounts(editor.getText()));
     };
 
@@ -156,8 +172,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
   }, [editor]);
 
   React.useEffect(() => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
     const updateBubble = () => {
+      if (editor.isDestroyed) return;
       const { from, to } = editor.state.selection;
       if (from === to || !editor.isFocused) {
         setBubblePos(null);
@@ -188,7 +205,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const lastEditorRef = React.useRef<Editor | null>(null);
 
   React.useEffect(() => {
-    if (!editor) {
+    if (!editor || editor.isDestroyed) {
       return;
     }
 
@@ -200,6 +217,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
     }
 
     if (lastAppliedEditorContentRef.current === null) {
+      if (editor.isDestroyed) return;
       lastAppliedEditorContentRef.current = getEditorContent(editor);
     }
 
@@ -207,6 +225,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
       return;
     }
 
+    if (editor.isDestroyed) return;
     const currentContent = getEditorContent(editor);
     const wasUntouchedSinceLastSync =
       currentContent === lastAppliedEditorContentRef.current;
@@ -222,7 +241,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
     lastAppliedInitialContentRef.current = initialContent;
     lastAppliedEditorContentRef.current = getEditorContent(editor);
 
-    setCounts(getTextEditorCounts(editor.getText()));
+    if (!editor.isDestroyed) {
+      setCounts(getTextEditorCounts(editor.getText()));
+    }
   }, [contentFormat, editor, getEditorContent, initialContent]);
 
   const getActiveHeadingLevel = (): HeadingLevel => {
